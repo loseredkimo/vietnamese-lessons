@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🇻🇳 越南語每日新聞教學 — 課程目錄</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 36px 24px 28px; text-align: center;
+    }
+    header .flag { font-size: 2.5rem; margin-bottom: 8px; }
+    header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+    header .sub { font-size: 0.9rem; opacity: 0.85; }
+    header .stats {
+      margin-top: 16px; display: inline-flex; gap: 24px;
+      background: rgba(255,255,255,0.15); border-radius: 12px;
+      padding: 8px 24px; font-size: 0.85rem;
+    }
+    header .stats span { display: flex; flex-direction: column; align-items: center; }
+    header .stats strong { font-size: 1.4rem; font-weight: 700; }
+
+    /* ── Main ── */
+    main { max-width: 860px; margin: 0 auto; padding: 32px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.05rem; font-weight: 700; color: var(--red);
+      margin: 0 0 20px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── Loading / Error ── */
+    #status-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; text-align: center;
+      color: var(--muted); font-size: 0.95rem;
+    }
+    #status-box .spinner {
+      display: inline-block; width: 32px; height: 32px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #status-box.error { border-color: #f1948a; background: #fdedec; color: var(--red); }
+
+    /* ── Lesson Grid ── */
+    #lesson-grid { display: none; }
+    .lesson-year { font-size: 0.8rem; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; margin: 24px 0 10px; }
+    .lesson-year:first-child { margin-top: 0; }
+
+    .lesson-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 16px;
+      text-decoration: none; color: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+    .lesson-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(123,63,160,0.12);
+      transform: translateY(-2px);
+    }
+
+    .card-date {
+      flex-shrink: 0; text-align: center;
+      background: var(--accent-light); border-radius: 10px;
+      padding: 8px 14px; min-width: 72px;
+    }
+    .card-date .month { font-size: 0.72rem; font-weight: 700; color: var(--accent); text-transform: uppercase; }
+    .card-date .day   { font-size: 1.6rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
+    .card-date .year  { font-size: 0.68rem; color: var(--muted); }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-title { font-weight: 600; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta  { font-size: 0.78rem; color: var(--muted); }
+
+    .card-arrow {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; transition: background 0.2s;
+    }
+    .lesson-card:hover .card-arrow { background: #5e2d7a; }
+
+    /* ── Empty ── */
+    .empty-hint {
+      text-align: center; color: var(--muted); padding: 40px 20px;
+      font-size: 0.9rem;
+    }
+    .empty-hint .big { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* ── How-to box ── */
+    .howto {
+      background: #eaf4fb; border: 1px solid #aed6f1;
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 28px;
+      font-size: 0.85rem; color: #1a5276;
+    }
+    .howto strong { color: var(--blue); }
+    .howto code {
+      background: #d6eaf8; border-radius: 4px; padding: 1px 5px;
+      font-family: monospace; font-size: 0.82rem;
+    }
+
+    footer {
+      text-align: center; font-size: 0.78rem; color: var(--muted);
+      padding: 20px; border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.2rem; }
+      .card-date { min-width: 58px; padding: 6px 10px; }
+      .card-date .day { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語每日新聞教學</h1>
+  <div class="sub">每日一篇越南新聞 · 含單字、語法、測驗、語音朗讀</div>
+  <div class="stats">
+    <span><strong id="total-count">—</strong>篇課程</span>
+    <span><strong id="latest-date">—</strong>最新更新</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- 說明提示（可刪除） -->
+  <div class="howto" id="config-hint" style="display:none;">
+    ⚙️ <strong>設定提示：</strong>請編輯此頁面底部 <code>&lt;script&gt;</code> 區塊，
+    將 <code>GITHUB_USER</code> 改為你的 GitHub 帳號，<code>GITHUB_REPO</code> 改為 repo 名稱，即可自動載入課程列表。
+  </div>
+
+  <div class="section-title"><span>📅</span>課程列表（最新在前）</div>
+
+  <!-- 載入狀態 -->
+  <div id="status-box">
+    <div class="spinner"></div>
+    <div>正在載入課程列表…</div>
+  </div>
+
+  <!-- 課程格 -->
+  <div id="lesson-grid"></div>
+
+</main>
+
+<div id="diag-panel" style="display:none;"></div>
+
+<footer>
+  🇻🇳 越南語每日新聞教學 ｜ 由 Claude AI 自動生成 ｜ Powered by GitHub Pages
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  ★ 請修改以下兩個變數 ★
+// ══════════════════════════════════════════════
+const GITHUB_USER = 'loseredkimo';   // ← 改成你的 GitHub 帳號
+const GITHUB_REPO = 'vietnamese-lessons'; // ← 改成你的 repo 名稱
+// ══════════════════════════════════════════════
+
+const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+
+const MONTH_ZH = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+// 從 filename 解析日期：vietnamese_lesson_YYYY-MM-DD.html
+function parseDate(filename) {
+  const m = filename.match(/vietnamese_lesson_(\d{4})-(\d{2})-(\d{2})\.html/);
+  if (!m) return null;
+  return { year: m[1], month: m[2], day: m[3], full: `${m[1]}-${m[2]}-${m[3]}` };
+}
+
+// 從 HTML 檔名推測課題（取越南文標題部分）
+// 實際標題存在 <title> 裡，這裡顯示預設文字，讀者點進去才看到
+function makeFriendlyLabel(filename, index) {
+  const d = parseDate(filename);
+  return d ? `第 ${index} 課 · ${d.year} 年 ${parseInt(d.month)} 月 ${parseInt(d.day)} 日` : filename;
+}
+
+async function loadLessons() {
+  const statusBox  = document.getElementById('status-box');
+  const lessonGrid = document.getElementById('lesson-grid');
+  const configHint = document.getElementById('config-hint');
+
+  // 偵測是否尚未設定
+  if (GITHUB_USER === 'your-username') {
+    statusBox.className = 'error';
+    statusBox.innerHTML = '⚠️ 請先在頁面底部 &lt;script&gt; 區塊中，將 <code>GITHUB_USER</code> 與 <code>GITHUB_REPO</code> 改為你的帳號與 repo 名稱。';
+    if (configHint) configHint.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res  = await fetch(API_URL);
+    if (!res.ok) throw new Error(`GitHub API 回應 ${res.status}：${await res.text()}`);
+    const data = await res.json();
+
+    // 篩選課程 HTML
+    const lessons = data
+      .filter(f => f.type === 'file' && /^vietnamese_lesson_\d{4}-\d{2}-\d{2}\.html$/.test(f.name))
+      .sort((a, b) => b.name.localeCompare(a.name)); // 最新在前
+
+    statusBox.style.display = 'none';
+    lessonGrid.style.display = 'block';
+
+    // 更新 header 統計
+    document.getElementById('total-count').textContent = lessons.length;
+    if (lessons.length > 0) {
+      const d = parseDate(lessons[0].name);
+      document.getElementById('latest-date').textContent = d ? `${d.month}/${d.day}` : '—';
+    }
+
+    if (lessons.length === 0) {
+      lessonGrid.innerHTML = `<div class="empty-hint"><div class="big">📭</div>尚未上傳任何課程 HTML。<br>請依照說明上傳 <code>vietnamese_lesson_YYYY-MM-DD.html</code> 檔案。</div>`;
+      return;
+    }
+
+    // 依年份分組渲染
+    let currentYear = '';
+    let totalIndex  = lessons.length;
+
+    lessons.forEach(file => {
+      const d = parseDate(file.name);
+      if (!d) return;
+
+      if (d.year !== currentYear) {
+        currentYear = d.year;
+        const yr = document.createElement('div');
+        yr.className = 'lesson-year';
+        yr.textContent = `── ${d.year} 年 ──`;
+        lessonGrid.appendChild(yr);
+      }
+
+      const card = document.createElement('a');
+      card.className = 'lesson-card';
+      card.href      = file.name;
+      card.target    = '_blank';
+      card.rel       = 'noopener';
+      card.innerHTML = `
+        <div class="card-date">
+          <div class="month">${MONTH_ZH[parseInt(d.month) - 1]}</div>
+          <div class="day">${parseInt(d.day)}</div>
+          <div class="year">${d.year}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">📰 第 ${totalIndex--} 課 · 點擊開始閱讀</div>
+          <div class="card-meta">🇻🇳 越南語新聞閱讀 · 含單字解析 · 語法教學 · 小測驗 · 語音朗讀</div>
+        </div>
+        <div class="card-arrow">→</div>`;
+      lessonGrid.appendChild(card);
+    });
+
+  } catch (err) {
+    statusBox.className = 'error';
+    statusBox.innerHTML = `
+      <div style="font-size:1.4rem;margin-bottom:8px;">⚠️ 載入失敗</div>
+      <div>${err.message}</div>
+      <div style="margin-top:10px;font-size:0.8rem;color:#666;">
+        可能原因：GitHub API 速率限制（每小時 60 次）、repo 設為 Private，或帳號 / repo 名稱有誤。
+      </div>`;
+  }
+}
+
+loadLessons();
+</script>
+</body>
+</html>
