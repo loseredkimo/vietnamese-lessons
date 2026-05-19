@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>越南語教學｜Xu hướng du lịch hè 2026 tại Việt Nam</title>
+  <title>越南語教學｜Xu hướng ẩm thực Việt Nam 2026</title>
   <style>
     :root {
       --red:    #c0392b;
@@ -200,15 +200,13 @@
     .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
     .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
 
-    /* ── Culture tip ── */
+    /* ── Culture block ── */
     .culture-block {
-      background: #fff8f0; border: 1px solid #f0d9b5;
+      background: #fffbf0; border: 1px solid var(--gold);
       border-left: 4px solid var(--gold); border-radius: 12px;
-      padding: 16px 20px; margin-bottom: 16px;
+      padding: 18px 20px; margin-bottom: 16px;
     }
-    .culture-block h3 { font-size: 1.1rem; color: #b7770d; margin-bottom: 8px; }
-    .culture-block p { font-size: 1.0625rem; color: var(--text); line-height: 1.8; margin-bottom: 8px; }
-    .culture-block p:last-child { margin-bottom: 0; }
+    .culture-block h3 { font-size: 1.15rem; color: #7d6608; margin-bottom: 8px; }
 
     footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
     @media (max-width: 600px) {
@@ -228,7 +226,6 @@
 
 <!-- ══ Controls ══ -->
 <div id="controls">
-  <!-- Row 1: 語速 + 語音選單 + 停止 -->
   <div class="ctrl-row">
     <span class="ctrl-label">語速</span>
     <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="0.85" />
@@ -236,12 +233,9 @@
 
     <span class="ctrl-label">語音</span>
     <select id="voice-select">
-      <!-- 預設佔位，JS 載入後自動換成 Microsoft An -->
       <option value="" disabled selected>⏳ 正在偵測語音…</option>
-      <!-- 瀏覽器內建語音（含 Microsoft An vi-VN），由 JS 動態填入 -->
       <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
       </optgroup>
-      <!-- Google Cloud 語音群組 -->
       <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
         <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
         <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
@@ -256,7 +250,6 @@
     <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
   </div>
 
-  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
   <div class="ctrl-row" id="api-row">
     <span class="ctrl-label">API 金鑰</span>
     <div class="key-wrap">
@@ -274,13 +267,13 @@
   <div class="section-title"><span>📰</span>新聞標題</div>
   <div class="news-meta">
     <div class="vn-text">
-      <button class="play-btn" data-text="Xu hướng du lịch hè 2026 tại Việt Nam: bền vững, cá nhân hóa và công nghệ AI">▶</button>
-      <span class="vn-title">Xu hướng du lịch hè 2026 tại Việt Nam: bền vững, cá nhân hóa và công nghệ AI</span>
+      <button class="play-btn" data-text="Xu hướng ẩm thực Việt Nam 2026: Nguyên liệu bản địa lên ngôi, món bình dân được nâng tầm">▶</button>
+      <span class="vn-title">Xu hướng ẩm thực Việt Nam 2026: Nguyên liệu bản địa lên ngôi, món bình dân được nâng tầm</span>
     </div>
-    <div class="zh-title">2026年越南夏季旅遊趨勢：永續、個人化與AI科技</div>
+    <div class="zh-title">2026 年越南飲食趨勢：在地食材崛起，平民料理華麗升級</div>
     <div class="meta-row">
-      <span>📅 2026-05-08</span>
-      <span>📰 <a href="https://www.vietnamplus.vn/cao-diem-du-lich-he-2026-xu-huong-nao-se-chiem-linh-thi-truong-noi-dia-post1109988.vnp" target="_blank">VietnamPlus（越南通訊社）</a></span>
+      <span>📅 2026-05-19</span>
+      <span>📰 <a href="https://ajinomotofoodservice.com.vn/bai-viet/xu-huong-am-thuc-viet-nam-2026" target="_blank">Ajinomoto Food Service Việt Nam</a></span>
     </div>
   </div>
 
@@ -289,34 +282,42 @@
 
   <div class="para-block">
     <div class="vn-text">
-      <button class="play-btn" data-text="Cao điểm Hè 2026 đang đến gần, đại diện nhiều đơn vị lữ hành nhận định xu hướng trải nghiệm cá nhân hóa, chú trọng du lịch xanh, bền vững và sự hỗ trợ của công nghệ AI đang chiếm lĩnh thị trường du lịch nội địa.">▶</button>
-      <span>Cao điểm Hè 2026 đang đến gần, đại diện nhiều đơn vị lữ hành nhận định xu hướng trải nghiệm cá nhân hóa, chú trọng du lịch xanh, bền vững và sự hỗ trợ của công nghệ AI đang chiếm lĩnh thị trường du lịch nội địa.</span>
+      <button class="play-btn" data-text="Năm 2026, ngành ẩm thực Việt Nam đang chứng kiến những chuyển biến rõ nét khi xu hướng quay về bản địa ngày càng được chú trọng. Các đầu bếp và thương hiệu kinh doanh ẩm thực trong nước không còn chạy theo phong cách nước ngoài, mà tìm cách khai thác kho tàng hương vị truyền thống theo ngôn ngữ hiện đại.">▶</button>
+      <span>Năm 2026, ngành ẩm thực Việt Nam đang chứng kiến những chuyển biến rõ nét khi xu hướng quay về bản địa ngày càng được chú trọng. Các đầu bếp và thương hiệu kinh doanh ẩm thực trong nước không còn chạy theo phong cách nước ngoài, mà tìm cách khai thác kho tàng hương vị truyền thống theo ngôn ngữ hiện đại.</span>
     </div>
-    <div class="zh-text">2026年夏季旺季即將來臨，多家旅行業者代表指出，個人化體驗、注重綠色永續旅遊，以及AI科技的輔助，正逐漸主導國內旅遊市場。</div>
+    <div class="zh-text">2026 年，越南飲食業正在經歷明顯的轉變，「回歸在地」的趨勢日益受到重視。國內廚師與餐飲品牌不再一味追隨外國風格，而是設法以現代語言重新詮釋傳統風味的寶庫。</div>
   </div>
 
   <div class="para-block">
     <div class="vn-text">
-      <button class="play-btn" data-text="Thị trường du lịch Việt Nam đang duy trì đà tăng trưởng tích cực. Lãnh đạo ngành nhận định có sự thay đổi rõ nét trong xu hướng khi du khách ngày càng quan tâm nhiều hơn đến những hành trình có yếu tố bền vững, chiều sâu trải nghiệm và tính cá nhân hóa cao.">▶</button>
-      <span>Thị trường du lịch Việt Nam đang duy trì đà tăng trưởng tích cực. Lãnh đạo ngành nhận định có sự thay đổi rõ nét trong xu hướng khi du khách ngày càng quan tâm nhiều hơn đến những hành trình có yếu tố bền vững, chiều sâu trải nghiệm và tính cá nhân hóa cao.</span>
+      <button class="play-btn" data-text="Xu hướng nổi bật nhất là sự quay trở lại mạnh mẽ của nguyên liệu bản địa, nhưng được thể hiện theo cách mới. Các đầu bếp đang khai thác nguồn nguyên liệu địa phương như một phần không thể tách rời trong bản sắc ẩm thực. Việc ưu tiên sử dụng nguyên liệu địa phương, từ những sản vật được thu hái tự nhiên đến những nguyên liệu từng bị lãng quên, giúp họ kể nên những câu chuyện ẩm thực đậm đà bản sắc và chân thực.">▶</button>
+      <span>Xu hướng nổi bật nhất là sự quay trở lại mạnh mẽ của nguyên liệu bản địa, nhưng được thể hiện theo cách mới. Các đầu bếp đang khai thác nguồn nguyên liệu địa phương như một phần không thể tách rời trong bản sắc ẩm thực. Việc ưu tiên sử dụng nguyên liệu địa phương, từ những sản vật được thu hái tự nhiên đến những nguyên liệu từng bị lãng quên, giúp họ kể nên những câu chuyện ẩm thực đậm đà bản sắc và chân thực.</span>
     </div>
-    <div class="zh-text">越南旅遊市場持續保持積極成長。業界領導者指出，旅遊趨勢出現明顯變化，旅客越來越重視具有永續元素、深度體驗及高度個人化的旅程。</div>
+    <div class="zh-text">最突出的趨勢是在地食材強勢回歸，但以嶄新的方式呈現。廚師們將本地食材視為飲食文化身分認同中不可分割的一部分加以發揮。優先使用在地食材——從自然採集的物產到曾被遺忘的古老食材——使他們能夠講述充滿文化底蘊、真實動人的飲食故事。</div>
   </div>
 
   <div class="para-block">
     <div class="vn-text">
-      <button class="play-btn" data-text="Theo báo cáo Xu hướng Du lịch 2026 của Booking.com, có tới 74% du khách Việt ưu tiên tự xây dựng lịch trình riêng, dù việc chuẩn bị đòi hỏi nhiều thời gian và công sức. Bên cạnh đó, có đến 92% du khách Việt Nam cho biết văn hóa ẩm thực và các món ăn địa phương ảnh hưởng đến lựa chọn điểm đến của họ.">▶</button>
-      <span>Theo báo cáo Xu hướng Du lịch 2026 của Booking.com, có tới 74% du khách Việt ưu tiên tự xây dựng lịch trình riêng, dù việc chuẩn bị đòi hỏi nhiều thời gian và công sức. Bên cạnh đó, có đến 92% du khách Việt Nam cho biết văn hóa ẩm thực và các món ăn địa phương ảnh hưởng đến lựa chọn điểm đến của họ.</span>
+      <button class="play-btn" data-text="Thay vì sao chép nguyên mẫu quốc tế, các thương hiệu tập trung vào bản địa hóa và sáng tạo. Phở Việt Nam được trình bày theo phong cách fine-dining, với nước dùng được nấu công phu hơn và bát phở được bày biện tinh tế hơn. Trà sữa, cà phê pha chế đặc biệt, nước ép cold-pressed cũng tập trung vào trải nghiệm và tính có thể chia sẻ trên mạng xã hội, thông qua thiết kế như một tác phẩm nghệ thuật với màu sắc phân tầng bắt mắt và bao bì tinh tế.">▶</button>
+      <span>Thay vì sao chép nguyên mẫu quốc tế, các thương hiệu tập trung vào bản địa hóa và sáng tạo. Phở Việt Nam được trình bày theo phong cách fine-dining, với nước dùng được nấu công phu hơn và bát phở được bày biện tinh tế hơn. Trà sữa, cà phê pha chế đặc biệt, nước ép cold-pressed cũng tập trung vào trải nghiệm và tính có thể chia sẻ trên mạng xã hội, thông qua thiết kế như một tác phẩm nghệ thuật với màu sắc phân tầng bắt mắt và bao bì tinh tế.</span>
     </div>
-    <div class="zh-text">根據Booking.com《2026旅遊趨勢報告》，高達74%的越南旅客優先選擇自行規劃行程，即便準備工作耗時費力。此外，高達92%的越南旅客表示，飲食文化與當地美食影響他們對目的地的選擇。</div>
+    <div class="zh-text">品牌們不再複製國際原型，而是專注於在地化與創意。越南河粉以精緻餐廳（fine-dining）風格呈現，湯底熬煮更加用心，碗的擺盤也更加精緻。珍珠奶茶、特調咖啡、冷壓果汁也著重於體驗感與社群媒體的「可分享性」，以色彩層次豐富、視覺搶眼的設計以及精緻包裝呈現如同藝術品般的效果。</div>
   </div>
 
   <div class="para-block">
     <div class="vn-text">
-      <button class="play-btn" data-text="Một trong những xu hướng nổi bật của mùa hè năm nay là sự gia tăng của các sản phẩm du lịch chậm, kết hợp nghỉ dưỡng với khám phá văn hóa và đời sống địa phương. Đại diện một số doanh nghiệp đánh giá hành vi du lịch Hè của người Việt đang trở nên thận trọng và chọn lọc hơn, ưu tiên các hành trình phù hợp với quỹ thời gian và bảo đảm chất lượng dịch vụ.">▶</button>
-      <span>Một trong những xu hướng nổi bật của mùa hè năm nay là sự gia tăng của các sản phẩm du lịch chậm, kết hợp nghỉ dưỡng với khám phá văn hóa và đời sống địa phương. Đại diện một số doanh nghiệp đánh giá hành vi du lịch Hè của người Việt đang trở nên thận trọng và chọn lọc hơn, ưu tiên các hành trình phù hợp với quỹ thời gian và bảo đảm chất lượng dịch vụ.</span>
+      <button class="play-btn" data-text="Tại Việt Nam, nhóm khách hàng trẻ thành thị ngày càng quan tâm đến protein thực vật và yếu tố thân thiện với môi trường. Những món ăn xanh với nguyên liệu thuần thực vật không chỉ đáp ứng nhu cầu sức khỏe mà còn đánh trúng tâm lý thích khẳng định phong cách cá nhân và nhu cầu chụp ảnh check-in của giới trẻ trên các nền tảng mạng xã hội.">▶</button>
+      <span>Tại Việt Nam, nhóm khách hàng trẻ thành thị ngày càng quan tâm đến protein thực vật và yếu tố thân thiện với môi trường. Những món ăn xanh với nguyên liệu thuần thực vật không chỉ đáp ứng nhu cầu sức khỏe mà còn đánh trúng tâm lý thích khẳng định phong cách cá nhân và nhu cầu chụp ảnh check-in của giới trẻ trên các nền tảng mạng xã hội.</span>
     </div>
-    <div class="zh-text">今年夏季最突出的趨勢之一，是「慢旅行」產品的增加，將休閒度假與探索在地文化及生活結合在一起。部分企業代表評估，越南人的夏季旅遊行為正變得更加謹慎與挑剔，優先選擇符合時間預算且服務品質有保障的行程。</div>
+    <div class="zh-text">在越南，都市年輕消費族群對植物性蛋白質與環境友善因素越來越感興趣。以純植物性食材製作的「綠色料理」不僅能滿足健康需求，更能精準打動年輕人喜歡在社群媒體平台上確立個人風格、拍照打卡的心理。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Theo các chuyên gia ẩm thực, năm 2026 sẽ là năm bứt phá của ẩm thực Việt Nam trên trường quốc tế. Khi người Việt ngày càng tự hào về bản sắc ẩm thực dân tộc, các thương hiệu trong nước có cơ hội lớn để vươn xa hơn, mang hương vị Việt đến gần hơn với thực khách toàn cầu.">▶</button>
+      <span>Theo các chuyên gia ẩm thực, năm 2026 sẽ là năm bứt phá của ẩm thực Việt Nam trên trường quốc tế. Khi người Việt ngày càng tự hào về bản sắc ẩm thực dân tộc, các thương hiệu trong nước có cơ hội lớn để vươn xa hơn, mang hương vị Việt đến gần hơn với thực khách toàn cầu.</span>
+    </div>
+    <div class="zh-text">據飲食專家表示，2026 年將是越南飲食在國際舞台上突破的一年。隨著越南人對本民族飲食文化身分認同的日益自豪，國內品牌有絕佳機會走向更遠，讓越南風味更貼近全球饕客。</div>
   </div>
 
   <!-- ══ 單字 ══ -->
@@ -334,89 +335,89 @@
   <div class="section-title"><span>🔍</span>語法解析</div>
 
   <div class="grammar-block">
-    <h3>語法一：「ngày càng + 形容詞／動詞（+ hơn）」——越來越…</h3>
+    <h3>語法一：「ngày càng + 形容詞／動詞」——越來越……</h3>
     <div class="grammar-label">新聞例句</div>
     <div class="grammar-vn" style="margin-bottom:4px;">
-      <button class="play-btn" data-text="Du khách ngày càng quan tâm nhiều hơn đến những hành trình có yếu tố bền vững.">▶</button>
-      <span>Du khách <span class="highlight">ngày càng</span> quan tâm nhiều hơn đến những hành trình có yếu tố bền vững.</span>
+      <button class="play-btn" data-text="Nhóm khách hàng trẻ thành thị ngày càng quan tâm đến protein thực vật và yếu tố thân thiện với môi trường.">▶</button>
+      <span>Nhóm khách hàng trẻ thành thị <span class="highlight">ngày càng</span> quan tâm đến protein thực vật và yếu tố thân thiện với môi trường.</span>
     </div>
-    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">旅客<span class="highlight">越來越</span>重視具有永續元素的旅程。</div>
-    <div class="structure-box">[主語] + ngày càng + [動詞／形容詞] (+ hơn)</div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">都市年輕消費族群對植物性蛋白質與環境友善因素<span class="highlight">越來越</span>感興趣。</div>
+    <div class="structure-box">[主語] + ngày càng + [形容詞 / 動詞]</div>
     <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
     <ul class="ext-list">
       <li><span class="num">1</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Thời tiết ngày càng nóng hơn vào mùa hè.">▶</button><span>Thời tiết <span class="highlight">ngày càng</span> nóng hơn vào mùa hè.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 夏天的天氣越來越熱。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Tiếng Việt ngày càng được nhiều người nước ngoài học.">▶</button><span>Tiếng Việt <span class="highlight">ngày càng</span> được nhiều người nước ngoài học.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 越來越多外國人學習越南語。</div>
       </div></li>
       <li><span class="num">2</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Người trẻ ngày càng yêu thích du lịch một mình.">▶</button><span>Người trẻ <span class="highlight">ngày càng</span> yêu thích du lịch một mình.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 年輕人越來越喜歡獨自旅行。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Giá cả hàng hóa ngày càng đắt hơn.">▶</button><span>Giá cả hàng hóa <span class="highlight">ngày càng</span> đắt hơn.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 物價越來越貴。</div>
       </div></li>
     </ul>
   </div>
 
   <div class="grammar-block">
-    <h3>語法二：「có tới / có đến + 數量」——高達…、多達…</h3>
+    <h3>語法二：「không còn… mà…」——不再……而是……</h3>
     <div class="grammar-label">新聞例句</div>
     <div class="grammar-vn" style="margin-bottom:4px;">
-      <button class="play-btn" data-text="Có tới 74% du khách Việt ưu tiên tự xây dựng lịch trình riêng.">▶</button>
-      <span><span class="highlight">Có tới</span> 74% du khách Việt ưu tiên tự xây dựng lịch trình riêng.</span>
+      <button class="play-btn" data-text="Các đầu bếp không còn chạy theo phong cách nước ngoài, mà tìm cách khai thác kho tàng hương vị truyền thống.">▶</button>
+      <span>Các đầu bếp <span class="highlight">không còn</span> chạy theo phong cách nước ngoài, <span class="highlight">mà</span> tìm cách khai thác kho tàng hương vị truyền thống.</span>
     </div>
-    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;"><span class="highlight">高達</span> 74% 的越南旅客優先選擇自行規劃行程。</div>
-    <div class="structure-box">Có tới / Có đến + [數字 / 百分比] + [名詞] + [動詞]</div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">廚師們<span class="highlight">不再</span>追隨外國風格，<span class="highlight">而是</span>設法開發傳統風味的寶庫。</div>
+    <div class="structure-box">[主語] + không còn + [動詞/行為1] + , mà + [動詞/行為2]</div>
     <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
     <ul class="ext-list">
       <li><span class="num">1</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Có tới 500 người tham dự sự kiện hôm nay.">▶</button><span><span class="highlight">Có tới</span> 500 người tham dự sự kiện hôm nay.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 今天高達500人出席了這場活動。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cô ấy không còn ăn thịt, mà chuyển sang ăn chay.">▶</button><span>Cô ấy <span class="highlight">không còn</span> ăn thịt, <span class="highlight">mà</span> chuyển sang ăn chay.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 她不再吃肉，而是改吃素食了。</div>
       </div></li>
       <li><span class="num">2</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Có đến 80% học sinh đạt điểm cao trong kỳ thi.">▶</button><span><span class="highlight">Có đến</span> 80% học sinh đạt điểm cao trong kỳ thi.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 高達80%的學生在考試中取得高分。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy không còn ở Hà Nội, mà đã chuyển vào thành phố Hồ Chí Minh.">▶</button><span>Anh ấy <span class="highlight">không còn</span> ở Hà Nội, <span class="highlight">mà</span> đã chuyển vào thành phố Hồ Chí Minh.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他已不再住在河內，而是搬到了胡志明市。</div>
       </div></li>
     </ul>
   </div>
 
   <div class="grammar-block">
-    <h3>語法三：「kết hợp + 動詞」——結合…（做）、搭配…</h3>
+    <h3>語法三：「thay vì + 動詞1, … + 動詞2」——與其……不如……</h3>
     <div class="grammar-label">新聞例句</div>
     <div class="grammar-vn" style="margin-bottom:4px;">
-      <button class="play-btn" data-text="Du lịch chậm, nghỉ dưỡng kết hợp khám phá văn hóa và đời sống địa phương.">▶</button>
-      <span>Du lịch chậm, nghỉ dưỡng <span class="highlight">kết hợp</span> khám phá văn hóa và đời sống địa phương.</span>
+      <button class="play-btn" data-text="Thay vì sao chép nguyên mẫu quốc tế, các thương hiệu tập trung vào bản địa hóa và sáng tạo.">▶</button>
+      <span><span class="highlight">Thay vì</span> sao chép nguyên mẫu quốc tế, các thương hiệu tập trung vào bản địa hóa và sáng tạo.</span>
     </div>
-    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">慢旅行，休閒度假<span class="highlight">結合</span>探索在地文化及生活。</div>
-    <div class="structure-box">[動詞1 / 名詞] + kết hợp + [動詞2 / 名詞]</div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;"><span class="highlight">與其</span>複製國際原型，品牌們更專注於在地化與創意。</div>
+    <div class="structure-box">Thay vì + [動詞1（不做的事）], [主語] + [動詞2（實際做的事）]</div>
     <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
     <ul class="ext-list">
       <li><span class="num">1</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy làm việc kết hợp du lịch khi ở nước ngoài.">▶</button><span>Anh ấy làm việc <span class="highlight">kết hợp</span> du lịch khi ở nước ngoài.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 他在國外邊工作邊旅行。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Thay vì đi taxi, chúng tôi quyết định đi bộ để tiết kiệm tiền.">▶</button><span><span class="highlight">Thay vì</span> đi taxi, chúng tôi quyết định đi bộ để tiết kiệm tiền.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 與其搭計程車，我們決定走路省錢。</div>
       </div></li>
       <li><span class="num">2</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Chương trình học kết hợp lý thuyết và thực hành.">▶</button><span>Chương trình học <span class="highlight">kết hợp</span> lý thuyết và thực hành.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 這個課程結合理論與實作。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Thay vì mua đồ mới, anh ấy thích sửa lại đồ cũ.">▶</button><span><span class="highlight">Thay vì</span> mua đồ mới, anh ấy thích sửa lại đồ cũ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 與其買新東西，他更喜歡修繕舊物。</div>
       </div></li>
     </ul>
   </div>
 
   <div class="grammar-block">
-    <h3>語法四：「ưu tiên + 動詞／名詞」——優先…、以…為優先</h3>
+    <h3>語法四：「không chỉ… mà còn…」——不只……而且還……</h3>
     <div class="grammar-label">新聞例句</div>
     <div class="grammar-vn" style="margin-bottom:4px;">
-      <button class="play-btn" data-text="Du khách ưu tiên các hành trình phù hợp với quỹ thời gian và bảo đảm chất lượng dịch vụ.">▶</button>
-      <span>Du khách <span class="highlight">ưu tiên</span> các hành trình phù hợp với quỹ thời gian và bảo đảm chất lượng dịch vụ.</span>
+      <button class="play-btn" data-text="Những món ăn xanh không chỉ đáp ứng nhu cầu sức khỏe mà còn đánh trúng tâm lý thích khẳng định phong cách cá nhân của giới trẻ.">▶</button>
+      <span>Những món ăn xanh <span class="highlight">không chỉ</span> đáp ứng nhu cầu sức khỏe <span class="highlight">mà còn</span> đánh trúng tâm lý thích khẳng định phong cách cá nhân của giới trẻ.</span>
     </div>
-    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">旅客<span class="highlight">優先</span>選擇符合時間預算且服務品質有保障的行程。</div>
-    <div class="structure-box">[主語] + ưu tiên + [動詞 / 名詞]</div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">綠色料理<span class="highlight">不只</span>能滿足健康需求，<span class="highlight">而且還</span>能精準打動年輕人確立個人風格的心理。</div>
+    <div class="structure-box">[主語] + không chỉ + [動詞/形容詞1] + mà còn + [動詞/形容詞2]</div>
     <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
     <ul class="ext-list">
       <li><span class="num">1</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Công ty ưu tiên tuyển dụng người có kinh nghiệm.">▶</button><span>Công ty <span class="highlight">ưu tiên</span> tuyển dụng người có kinh nghiệm.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司優先招募有經驗的人。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Phở không chỉ là món ăn ngon mà còn là biểu tượng văn hóa của Việt Nam.">▶</button><span>Phở <span class="highlight">không chỉ</span> là món ăn ngon <span class="highlight">mà còn</span> là biểu tượng văn hóa của Việt Nam.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 河粉不只是一道美食，更是越南的文化象徵。</div>
       </div></li>
       <li><span class="num">2</span><div>
-        <div class="grammar-vn"><button class="play-btn" data-text="Chúng ta nên ưu tiên sức khỏe hơn công việc.">▶</button><span>Chúng ta nên <span class="highlight">ưu tiên</span> sức khỏe hơn công việc.</span></div>
-        <div style="color:var(--muted);font-size:1.0625rem;">→ 我們應該把健康優先於工作。</div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Học tiếng Việt không chỉ giúp bạn giao tiếp mà còn giúp bạn hiểu sâu hơn về văn hóa.">▶</button><span>Học tiếng Việt <span class="highlight">không chỉ</span> giúp bạn giao tiếp <span class="highlight">mà còn</span> giúp bạn hiểu sâu hơn về văn hóa.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 學越南語不只能幫你溝通，還能讓你更深入了解文化。</div>
       </div></li>
     </ul>
   </div>
@@ -425,15 +426,13 @@
   <div class="section-title"><span>💡</span>文化小提示</div>
 
   <div class="culture-block">
-    <h3>「Du lịch chậm」—— 慢旅行的興起</h3>
-    <p>「Du lịch chậm」（慢旅行，源自英文 slow travel）是近年在越南年輕世代之間興起的旅遊哲學，強調不追趕景點、不急於打卡，而是放慢腳步、融入當地生活。旅客會選擇在一個地方待上較長時間，與居民互動、品嚐在地食物、參加社區活動。</p>
-    <p>越南因其多元地理景觀——從北部山區（Sa Pa、Hà Giang）、中部古城（Hội An）到南部湄公河三角洲——特別適合「慢旅行」。台灣旅客前往越南時，不妨嘗試跳脫觀光客視角，在一個地方「蹲點」幾天，感受截然不同的在地體驗。</p>
+    <h3>河粉（Phở）的身世與現代演變</h3>
+    <p style="font-size:1.1rem;line-height:1.8;">河粉（phở）起源於 20 世紀初的越南北部，最初是街頭小吃攤的庶民食物。傳統上分為「phở bò（牛肉河粉）」和「phở gà（雞肉河粉）」兩大類，以熬煮多時的清湯、米粉條與新鮮香草為主要元素。近年來，隨著精緻餐飲（fine-dining）浪潮興起，河粉也出現在高級餐廳的菜單上，融合創意擺盤與精心挑選的在地食材，展現截然不同的面貌，同時也引發了「傳統 vs. 創新」的飲食文化討論。</p>
   </div>
 
   <div class="culture-block">
-    <h3>「Ẩm thực」（飲食文化）在越南旅遊中的核心地位</h3>
-    <p>越南語 ẩm thực（漢越詞：飲食）泛指飲食文化，不只是「吃東西」，更包含食物背後的歷史、地域與社會意涵。92%的越南旅客將飲食列為選擇目的地的重要考量，這反映了越南人對食物的深厚情感。</p>
-    <p>越南各地飲食差異顯著：河內以清淡的河粉（phở）與烤肉米線（bún chả）聞名；順化以辛辣的宮廷料理著稱；胡志明市則融合南部豐饒食材與法式料理影響。對台灣學生來說，了解飲食詞彙也是學習越南語的重要切入點。</p>
+    <h3>越南飲食文化中的「check-in 文化」</h3>
+    <p style="font-size:1.1rem;line-height:1.8;">隨著 Facebook、Instagram、TikTok 在越南的普及，「chụp ảnh check-in（打卡拍照）」已成為年輕世代飲食體驗的重要一環。餐廳與飲料品牌深知這一趨勢，紛紛在食物造型、包裝設計、用餐環境上大量投入，以吸引年輕客群主動在社群媒體上分享。這種現象不僅推動了餐飲業的美學升級，也讓越南飲食文化以前所未有的速度傳播到全球各地。</p>
   </div>
 
   <!-- ══ Quiz ══ -->
@@ -441,16 +440,16 @@
 
   <div class="quiz-block">
     <h3>第 1 題【翻譯題】</h3>
-    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「越來越多的旅客優先選擇自行規劃行程，以深度體驗在地的飲食文化。」</strong></div>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「這間咖啡廳不只提供美味的咖啡，還有令人驚豔的精緻擺盤，讓人忍不住拍照上傳。」</strong></div>
     <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
     <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
     <div class="answer-box" id="a1">
       <div class="ans-label">✅ 參考答案</div>
       <div class="ans-vn">
-        <button class="play-btn" data-text="Ngày càng nhiều du khách ưu tiên tự xây dựng lịch trình riêng để trải nghiệm sâu sắc văn hóa ẩm thực địa phương.">▶</button>
-        <span>Ngày càng nhiều du khách ưu tiên tự xây dựng lịch trình riêng để trải nghiệm sâu sắc văn hóa ẩm thực địa phương.</span>
+        <button class="play-btn" data-text="Quán cà phê này không chỉ phục vụ cà phê ngon mà còn có cách bày biện tinh tế đến ngạc nhiên, khiến khách hàng không thể không chụp ảnh đăng lên mạng.">▶</button>
+        <span>Quán cà phê này không chỉ phục vụ cà phê ngon mà còn có cách bày biện tinh tế đến ngạc nhiên, khiến khách hàng không thể không chụp ảnh đăng lên mạng.</span>
       </div>
-      <div class="ans-zh">越來越多的旅客優先選擇自行規劃行程，以深度體驗在地的飲食文化。</div>
+      <div class="ans-zh">這間咖啡廳不只提供美味的咖啡，還有令人驚豔的精緻擺盤，讓顧客忍不住拍照上傳網路。</div>
     </div>
   </div>
 
@@ -458,21 +457,21 @@
     <h3>第 2 題【選擇題】</h3>
     <div class="quiz-prompt">
       請選出最適合填入空格的詞語：<br>
-      <strong>「Hành vi du lịch Hè của người Việt đang trở nên ______ và chọn lọc hơn trong năm 2026.」</strong>
+      <strong>「________ mua nguyên liệu nhập khẩu, nhà hàng quyết định dùng rau củ trồng tại địa phương.」</strong>
     </div>
     <div class="options">
-      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）duy trì</button>
-      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（B）bền vững</button>
-      <button class="opt-btn" onclick="checkOpt(this,'correct')">（C）thận trọng</button>
-      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）ưu tiên</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）Không chỉ</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（B）Ngày càng</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（C）Thay vì</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）Không còn</button>
     </div>
     <div class="answer-box" id="a2">
-      <div class="ans-label">✅ 正確答案：（C）thận trọng</div>
+      <div class="ans-label">✅ 正確答案：（C）Thay vì</div>
       <div class="ans-vn">
-        <button class="play-btn" data-text="Hành vi du lịch Hè của người Việt đang trở nên thận trọng và chọn lọc hơn trong năm 2026.">▶</button>
-        <span>Hành vi du lịch Hè của người Việt đang trở nên <span class="highlight">thận trọng</span> và chọn lọc hơn trong năm 2026.</span>
+        <button class="play-btn" data-text="Thay vì mua nguyên liệu nhập khẩu, nhà hàng quyết định dùng rau củ trồng tại địa phương.">▶</button>
+        <span><span class="highlight">Thay vì</span> mua nguyên liệu nhập khẩu, nhà hàng quyết định dùng rau củ trồng tại địa phương.</span>
       </div>
-      <div class="ans-zh">thận trọng = 謹慎的；原文中指旅客在選擇行程時變得更加小心挑剔。其餘選項語意不符句子脈絡。</div>
+      <div class="ans-zh">與其購買進口食材，這家餐廳決定使用在地種植的蔬菜。<br>「thay vì + 動詞」表示「與其做某事，不如做另一件事」，語意最為吻合。</div>
     </div>
   </div>
 
@@ -480,20 +479,20 @@
     <h3>第 3 題【問答題】</h3>
     <div class="quiz-prompt">
       <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
-        <button class="play-btn" data-text="Theo bài báo, điều gì ảnh hưởng đến lựa chọn điểm đến của 92% du khách Việt Nam?">▶</button>
-        <strong>Theo bài báo, điều gì ảnh hưởng đến lựa chọn điểm đến của 92% du khách Việt Nam?</strong>
+        <button class="play-btn" data-text="Theo bài báo, tại sao giới trẻ Việt Nam thích những món ăn có thể chia sẻ trên mạng xã hội?">▶</button>
+        <strong>Theo bài báo, tại sao giới trẻ Việt Nam thích những món ăn có thể chia sẻ trên mạng xã hội?</strong>
       </div>
-      <span style="color:var(--muted);font-size:1.0625rem;">（根據這篇文章，什麼影響了92%越南旅客對目的地的選擇？）</span>
+      <span style="color:var(--muted);font-size:1.0625rem;">（根據文章，為什麼越南年輕人喜歡能在社群媒體上分享的食物？）</span>
     </div>
     <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
     <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
     <div class="answer-box" id="a3">
       <div class="ans-label">✅ 參考答案</div>
       <div class="ans-vn">
-        <button class="play-btn" data-text="Theo bài báo, văn hóa ẩm thực và các món ăn địa phương ảnh hưởng đến lựa chọn điểm đến của 92% du khách Việt Nam. Điều này cho thấy ẩm thực đóng vai trò rất quan trọng trong quyết định du lịch của người Việt.">▶</button>
-        <span>Theo bài báo, văn hóa ẩm thực và các món ăn địa phương ảnh hưởng đến lựa chọn điểm đến của 92% du khách Việt Nam. Điều này cho thấy ẩm thực đóng vai trò rất quan trọng trong quyết định du lịch của người Việt.</span>
+        <button class="play-btn" data-text="Vì những món ăn đó đánh trúng tâm lý thích khẳng định phong cách cá nhân của giới trẻ. Khi món ăn được thiết kế đẹp mắt, họ có thể chụp ảnh check-in để thể hiện cá tính và gu thẩm mỹ của mình trên các nền tảng mạng xã hội.">▶</button>
+        <span>Vì những món ăn đó đánh trúng tâm lý thích khẳng định phong cách cá nhân của giới trẻ. Khi món ăn được thiết kế đẹp mắt, họ có thể chụp ảnh check-in để thể hiện cá tính và gu thẩm mỹ của mình trên các nền tảng mạng xã hội.</span>
       </div>
-      <div class="ans-zh">根據文章，飲食文化與當地美食影響了92%越南旅客對目的地的選擇。這顯示飲食在越南人的旅遊決策中扮演非常重要的角色。</div>
+      <div class="ans-zh">因為這些食物能精準打動年輕人喜歡確立個人風格的心理。當食物設計得很美觀時，他們可以在社群媒體平台上打卡拍照，以展現自己的個性與審美品味。</div>
     </div>
   </div>
 
@@ -517,18 +516,18 @@
 //  Vocab data
 // ════════════════════════════════════════
 const vocabData = [
-  { vn:"cao điểm",      pos:"名詞",      zh:"旺季、高峰期",         eg_vn:"Mùa hè là cao điểm của ngành du lịch.",               eg_zh:"夏天是旅遊業的旺季。",           hv:"高點" },
-  { vn:"lữ hành",       pos:"名詞",      zh:"旅行（業）",           eg_vn:"Công ty lữ hành này rất nổi tiếng.",                  eg_zh:"這家旅行業者非常有名。",         hv:"旅行" },
-  { vn:"xu hướng",      pos:"名詞",      zh:"趨勢、傾向",           eg_vn:"Xu hướng mua sắm trực tuyến ngày càng tăng.",         eg_zh:"網路購物的趨勢日益增長。",       hv:"趨向" },
-  { vn:"bền vững",      pos:"形容詞",    zh:"永續的、持久的",       eg_vn:"Chúng ta cần phát triển theo hướng bền vững.",        eg_zh:"我們需要朝著永續方向發展。",     hv:"" },
-  { vn:"cá nhân hóa",  pos:"動詞",      zh:"個人化",               eg_vn:"Dịch vụ được cá nhân hóa theo nhu cầu khách hàng.",   eg_zh:"服務根據客戶需求進行個人化。",   hv:"個人化" },
-  { vn:"duy trì",       pos:"動詞",      zh:"維持、保持",           eg_vn:"Anh ấy duy trì thói quen tập thể dục mỗi ngày.",      eg_zh:"他每天維持運動的習慣。",         hv:"維持" },
-  { vn:"lịch trình",    pos:"名詞",      zh:"行程、時間表",         eg_vn:"Bạn đã lên lịch trình cho chuyến đi chưa?",           eg_zh:"你為這次旅行制定行程了嗎？",     hv:"曆程" },
-  { vn:"ẩm thực",       pos:"名詞",      zh:"飲食、飲食文化",       eg_vn:"Ẩm thực Hội An rất phong phú và đặc sắc.",            eg_zh:"會安的飲食文化非常豐富而獨特。", hv:"飲食" },
-  { vn:"thận trọng",    pos:"形容詞",    zh:"謹慎的、小心的",       eg_vn:"Hãy thận trọng khi đưa ra quyết định quan trọng.",    eg_zh:"做重要決定時要謹慎。",           hv:"慎重" },
-  { vn:"trải nghiệm",  pos:"名詞／動詞",zh:"體驗、經歷",           eg_vn:"Đây là một trải nghiệm khó quên.",                    eg_zh:"這是一次難忘的體驗。",           hv:"" },
-  { vn:"chiều sâu",     pos:"名詞",      zh:"深度",                 eg_vn:"Bài nghiên cứu này có chiều sâu học thuật.",          eg_zh:"這篇研究具有學術深度。",         hv:"" },
-  { vn:"chọn lọc",      pos:"形容詞",    zh:"挑剔的、有所篩選",     eg_vn:"Cô ấy rất chọn lọc khi mua quần áo.",                 eg_zh:"她在買衣服方面非常挑剔。",       hv:"" },
+  { vn:"xu hướng",     pos:"名詞",      zh:"趨勢、傾向",              eg_vn:"Xu hướng ẩm thực lành mạnh đang phát triển mạnh.",      eg_zh:"健康飲食趨勢正在蓬勃發展。",       hv:"趨向" },
+  { vn:"bản địa",      pos:"形容詞",    zh:"在地的、本土的",           eg_vn:"Nguyên liệu bản địa thường tươi ngon hơn.",             eg_zh:"在地食材通常更新鮮美味。",         hv:"本地" },
+  { vn:"khai thác",    pos:"動詞",      zh:"開發、發掘、利用",         eg_vn:"Chúng ta cần khai thác tiềm năng du lịch của vùng này.", eg_zh:"我們需要發掘這個地區的觀光潛力。", hv:"開拓" },
+  { vn:"bản sắc",      pos:"名詞",      zh:"特色、文化身分認同",       eg_vn:"Bản sắc văn hóa Việt Nam rất phong phú.",               eg_zh:"越南的文化底蘊非常豐富。",         hv:"本色" },
+  { vn:"sáng tạo",     pos:"動詞/名詞", zh:"創意、有創意的",           eg_vn:"Đầu bếp trẻ này rất sáng tạo trong cách nấu ăn.",      eg_zh:"這位年輕廚師在烹飪上非常有創意。", hv:"創造" },
+  { vn:"thương hiệu",  pos:"名詞",      zh:"品牌",                     eg_vn:"Đây là thương hiệu cà phê nổi tiếng nhất Việt Nam.",    eg_zh:"這是越南最知名的咖啡品牌。",       hv:"商標" },
+  { vn:"truyền thống", pos:"形容詞/名詞","zh":"傳統的、傳統",           eg_vn:"Áo dài là trang phục truyền thống của Việt Nam.",       eg_zh:"奧黛是越南的傳統服飾。",           hv:"傳統" },
+  { vn:"tinh tế",      pos:"形容詞",    zh:"精緻、細膩、雅致",         eg_vn:"Bàn tay cô ấy làm việc rất tinh tế.",                  eg_zh:"她的雙手做事非常精細。",           hv:"精細" },
+  { vn:"ẩm thực",      pos:"名詞",      zh:"飲食、美食文化",           eg_vn:"Ẩm thực Việt Nam rất đa dạng và phong phú.",           eg_zh:"越南飲食文化非常多元豐富。",       hv:"飲食" },
+  { vn:"chuyển biến",  pos:"名詞/動詞", zh:"轉變、變化",               eg_vn:"Nền kinh tế đang có nhiều chuyển biến tích cực.",       eg_zh:"經濟正在發生許多正面的轉變。",     hv:"轉變" },
+  { vn:"đáp ứng",      pos:"動詞",      zh:"滿足（需求）、回應",       eg_vn:"Nhà hàng này đáp ứng được nhu cầu của mọi khách hàng.", eg_zh:"這家餐廳能夠滿足所有顧客的需求。", hv:"" },
+  { vn:"bứt phá",      pos:"動詞",      zh:"突破、衝破限制",           eg_vn:"Đội bóng đã bứt phá trong hiệp hai.",                  eg_zh:"這支球隊在下半場有所突破。",       hv:"" },
 ];
 
 (function buildVocabTable() {
@@ -563,13 +562,12 @@ let voicesLoaded = false;
 
 function loadBrowserVoices() {
   const voices = synth.getVoices();
-  if (!voices.length) return false;   // 尚未就緒
-  if (voicesLoaded) return true;      // 避免重複執行
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
   voicesLoaded = true;
 
   const grp = document.getElementById('browser-group');
   grp.innerHTML = '';
-  // 越南語語音排最前面
   const sorted = [
     ...voices.filter(v => v.lang.startsWith('vi')),
     ...voices.filter(v => !v.lang.startsWith('vi'))
@@ -581,7 +579,6 @@ function loadBrowserVoices() {
     grp.appendChild(opt);
   });
 
-  // 預設選中第一個越南語瀏覽器語音
   const viVoice = voices.find(v => v.lang.startsWith('vi'));
   if (viVoice) {
     document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
@@ -590,19 +587,14 @@ function loadBrowserVoices() {
   return true;
 }
 
-// 策略1：onvoiceschanged 事件（Chrome 標準路徑）
 synth.onvoiceschanged = loadBrowserVoices;
-
-// 策略2：立刻試一次（Firefox / Safari 同步回傳）
 loadBrowserVoices();
-
-// 策略3：多段延遲重試（Chrome 有時延遲數百毫秒）
 [200, 500, 1000, 2000].forEach(ms =>
   setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
 );
 
 // ════════════════════════════════════════
-//  Show/hide API key row based on selection
+//  Show/hide API key row
 // ════════════════════════════════════════
 document.getElementById('voice-select').addEventListener('change', function() {
   const isGoogle = this.value.startsWith('google:');
