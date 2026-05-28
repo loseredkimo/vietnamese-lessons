@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Năm 2026: Việt Nam bứt phá kinh tế số, lấy AI và dữ liệu làm trụ cột</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="1.0" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Năm 2026: Việt Nam bứt phá kinh tế số, lấy AI và dữ liệu làm trụ cột phát triển mới">▶</button>
+      <span class="vn-title">Năm 2026: Việt Nam bứt phá kinh tế số, lấy AI và dữ liệu làm trụ cột phát triển mới</span>
+    </div>
+    <div class="zh-title">2026年：越南數位經濟大突破，以AI與數據作為新發展支柱</div>
+    <div class="meta-row">
+      <span>📅 2026-05-20</span>
+      <span>📰 <a href="https://mst.gov.vn/but-pha-kinh-te-so-lay-kinh-te-du-lieu-va-ai-lam-tru-cot-phat-trien-moi-197260225223052504.htm" target="_blank">Bộ Khoa học và Công nghệ（科學暨科技部）</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Thủ tướng Phạm Minh Chính vừa nhấn mạnh năm 2026 là năm Việt Nam cần bứt phá kinh tế số, lấy trí tuệ nhân tạo và kinh tế dữ liệu làm trụ cột phát triển mới. Định hướng này được đưa ra trong bối cảnh quy mô kinh tế số Việt Nam đã đạt khoảng 39 tỷ USD vào năm 2025, thuộc nhóm tăng trưởng nhanh nhất Đông Nam Á.">▶</button>
+      <span>Thủ tướng Phạm Minh Chính vừa nhấn mạnh năm 2026 là năm Việt Nam cần "bứt phá kinh tế số", lấy trí tuệ nhân tạo và kinh tế dữ liệu làm trụ cột phát triển mới. Định hướng này được đưa ra trong bối cảnh quy mô kinh tế số Việt Nam đã đạt khoảng 39 tỷ USD vào năm 2025, thuộc nhóm tăng trưởng nhanh nhất Đông Nam Á.</span>
+    </div>
+    <div class="zh-text">越南總理范明正剛剛強調，2026年是越南需要「數位經濟突破」的一年，以人工智慧和資料經濟作為新的發展支柱。這一方向是在越南數位經濟規模於2025年達到約390億美元、躋身東南亞成長最快群組的背景下提出的。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Theo chỉ đạo của Thủ tướng, Việt Nam cần chuyển từ tư duy quản lý sang kiến tạo, đồng thời khẩn trương hoàn thiện thể chế cho kinh tế dữ liệu và trí tuệ nhân tạo. Các bộ ngành được yêu cầu sớm ban hành văn bản hướng dẫn các luật về chuyển đổi số, an ninh mạng và thương mại điện tử.">▶</button>
+      <span>Theo chỉ đạo của Thủ tướng, Việt Nam cần chuyển từ tư duy "quản lý" sang "kiến tạo", đồng thời khẩn trương hoàn thiện thể chế cho kinh tế dữ liệu và trí tuệ nhân tạo. Các bộ ngành được yêu cầu sớm ban hành văn bản hướng dẫn các luật về chuyển đổi số, an ninh mạng và thương mại điện tử.</span>
+    </div>
+    <div class="zh-text">根據總理的指示，越南需要從「管理」思維轉向「建造」思維，同時加緊完善資料經濟和人工智慧的體制。各部門被要求盡快頒布數位轉型、網路安全和電子商務等相關法律的指導文件。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Về hạ tầng, Chính phủ đặt mục tiêu phủ sóng 5G toàn quốc trong năm 2026, đẩy nhanh vận hành Trung tâm Dữ liệu quốc gia và thúc đẩy phát triển internet vệ tinh quỹ đạo tầm thấp. Đây được coi là những bước đi nền tảng để đưa Việt Nam trở thành quốc gia dẫn đầu về chuyển đổi số trong khu vực.">▶</button>
+      <span>Về hạ tầng, Chính phủ đặt mục tiêu phủ sóng 5G toàn quốc trong năm 2026, đẩy nhanh vận hành Trung tâm Dữ liệu quốc gia và thúc đẩy phát triển internet vệ tinh quỹ đạo tầm thấp. Đây được coi là những bước đi nền tảng để đưa Việt Nam trở thành quốc gia dẫn đầu về chuyển đổi số trong khu vực.</span>
+    </div>
+    <div class="zh-text">在基礎設施方面，政府設定目標在2026年實現5G全國覆蓋，加快國家資料中心的運作，並推動低地球軌道衛星網路的發展。這些被視為推動越南成為該地區數位轉型領先國家的基礎步驟。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm tối thiểu 30% GDP, tỷ lệ giao dịch không dùng tiền mặt đạt 80% và tỷ lệ doanh nghiệp đổi mới sáng tạo vượt 40%. Để đạt được những mục tiêu này, hàng loạt trường đại học đã mở thêm các ngành học về AI, khoa học dữ liệu và công nghệ số.">▶</button>
+      <span>Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm tối thiểu 30% GDP, tỷ lệ giao dịch không dùng tiền mặt đạt 80% và tỷ lệ doanh nghiệp đổi mới sáng tạo vượt 40%. Để đạt được những mục tiêu này, hàng loạt trường đại học đã mở thêm các ngành học về AI, khoa học dữ liệu và công nghệ số.</span>
+    </div>
+    <div class="zh-text">到2030年，越南設定數位經濟佔GDP至少30%、無現金交易比例達80%、創新企業比例超過40%的目標。為實現這些目標，眾多大學已增設人工智慧、資料科學和數位科技相關科系。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「lấy X làm Y」——以 X 作為 Y</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Việt Nam lấy trí tuệ nhân tạo và kinh tế dữ liệu làm trụ cột phát triển mới.">▶</button>
+      <span>Việt Nam <span class="highlight">lấy</span> trí tuệ nhân tạo và kinh tế dữ liệu <span class="highlight">làm</span> trụ cột phát triển mới.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">越南<span class="highlight">以</span>人工智慧和資料經濟<span class="highlight">作為</span>新的發展支柱。</div>
+    <div class="structure-box">[主語] + lấy + [X（受詞）] + làm + [Y（角色／功能）]</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty lấy khách hàng làm trung tâm của mọi hoạt động.">▶</button><span>Công ty <span class="highlight">lấy</span> khách hàng <span class="highlight">làm</span> trung tâm của mọi hoạt động.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司以顧客為一切活動的核心。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Nhà trường lấy học sinh làm mục tiêu phục vụ chính.">▶</button><span>Nhà trường <span class="highlight">lấy</span> học sinh <span class="highlight">làm</span> mục tiêu phục vụ chính.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 學校以學生為主要服務對象。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：「được yêu cầu + 動詞」——被要求做⋯⋯（被動語態）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Các bộ ngành được yêu cầu sớm ban hành văn bản hướng dẫn các luật về chuyển đổi số.">▶</button>
+      <span>Các bộ ngành <span class="highlight">được yêu cầu</span> sớm ban hành văn bản hướng dẫn các luật về chuyển đổi số.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">各部門<span class="highlight">被要求</span>盡快頒布數位轉型相關法律的指導文件。</div>
+    <div class="structure-box">[受事主語] + được yêu cầu + 動詞（動作）</div>
+    <div style="font-size:1rem;color:var(--muted);margin-bottom:8px;">「được」用於被動語態時，含有「受益」或「中性」語氣；對比之下「bị」則帶有負面含義。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Học sinh được yêu cầu nộp bài tập trước thứ Sáu.">▶</button><span>Học sinh <span class="highlight">được yêu cầu</span> nộp bài tập trước thứ Sáu.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 學生被要求在週五前繳交作業。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Nhân viên mới được yêu cầu tham gia khóa đào tạo định hướng.">▶</button><span>Nhân viên mới <span class="highlight">được yêu cầu</span> tham gia khóa đào tạo định hướng.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 新員工被要求參加新人定向培訓課程。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：「đặt mục tiêu + 動詞／名詞」——設定目標</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Chính phủ đặt mục tiêu phủ sóng 5G toàn quốc trong năm 2026.">▶</button>
+      <span>Chính phủ <span class="highlight">đặt mục tiêu</span> phủ sóng 5G toàn quốc trong năm 2026.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">政府<span class="highlight">設定目標</span>在2026年實現5G全國覆蓋。</div>
+    <div class="structure-box">[主語] + đặt mục tiêu + 動詞／名詞（目標內容）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty đặt mục tiêu tăng doanh thu 20% trong năm nay.">▶</button><span>Công ty <span class="highlight">đặt mục tiêu</span> tăng doanh thu 20% trong năm nay.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司設定今年營收增長20%的目標。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy đặt mục tiêu học xong khóa lập trình trong ba tháng.">▶</button><span>Anh ấy <span class="highlight">đặt mục tiêu</span> học xong khóa lập trình trong ba tháng.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他設定在三個月內學完程式設計課程的目標。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「trong bối cảnh」——在⋯⋯的背景下</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Định hướng này được đưa ra trong bối cảnh kinh tế số Việt Nam tăng trưởng thuộc nhóm nhanh nhất Đông Nam Á.">▶</button>
+      <span>Định hướng này được đưa ra <span class="highlight">trong bối cảnh</span> kinh tế số Việt Nam tăng trưởng thuộc nhóm nhanh nhất Đông Nam Á.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">這一方向是<span class="highlight">在</span>越南數位經濟成長躋身東南亞最快群組<span class="highlight">的背景下</span>提出的。</div>
+    <div class="structure-box">[主句] + trong bối cảnh + [背景描述子句]</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Doanh nghiệp cần thích nghi trong bối cảnh cạnh tranh toàn cầu ngày càng khốc liệt.">▶</button><span>Doanh nghiệp cần thích nghi <span class="highlight">trong bối cảnh</span> cạnh tranh toàn cầu ngày càng khốc liệt.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 在全球競爭日益激烈的背景下，企業需要適應。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Ngành du lịch phục hồi mạnh mẽ trong bối cảnh kinh tế tăng trưởng ổn định.">▶</button><span>Ngành du lịch phục hồi mạnh mẽ <span class="highlight">trong bối cảnh</span> kinh tế tăng trưởng ổn định.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 在經濟穩定增長的背景下，旅遊業強勁復甦。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+  <div class="para-block">
+    <div class="vn-text" style="font-size:1.1rem;">
+      <span>越南政府將2026年定調為「數位經濟突破年」（Năm bứt phá kinh tế số），這是越南推動「數位轉型」（chuyển đổi số）國家戰略的重要里程碑。越南的數位轉型計畫自2020年代初啟動，目標是在2030年前建立現代化的數位政府、數位經濟和數位社會三大支柱。</span>
+    </div>
+    <div class="zh-text">越南語中「kinh tế số」（數位經濟）、「trí tuệ nhân tạo」（人工智慧）、「dữ liệu」（資料/數據）等詞彙大量借用漢越詞，與中文有相似之處。台灣學生學習科技類越南文時，可以從漢越詞的角度切入，往往能快速理解詞義。</div>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「越南政府以人工智慧和資料作為發展的新支柱，設定2030年數位經濟佔GDP三成的目標。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Chính phủ Việt Nam lấy trí tuệ nhân tạo và dữ liệu làm trụ cột phát triển mới, đặt mục tiêu kinh tế số chiếm 30% GDP vào năm 2030.">▶</button>
+        <span>Chính phủ Việt Nam lấy trí tuệ nhân tạo và dữ liệu làm trụ cột phát triển mới, đặt mục tiêu kinh tế số chiếm 30% GDP vào năm 2030.</span>
+      </div>
+      <div class="ans-zh">越南政府以人工智慧和資料作為新的發展支柱，設定2030年數位經濟佔GDP 30%的目標。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Việt Nam cần chuyển từ tư duy ________ sang tư duy kiến tạo trong thời đại kinh tế số.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（A）quản lý</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（B）giáo dục</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（C）bứt phá</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）phủ sóng</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（A）quản lý</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Việt Nam cần chuyển từ tư duy quản lý sang tư duy kiến tạo trong thời đại kinh tế số.">▶</button>
+        <span>Việt Nam cần chuyển từ tư duy <span class="highlight">quản lý</span> sang tư duy kiến tạo trong thời đại kinh tế số.</span>
+      </div>
+      <div class="ans-zh">quản lý = 管理；新聞原文提到越南需從「管理」思維轉向「建造」思維，其餘選項語意不符。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm bao nhiêu phần trăm GDP?">▶</button>
+        <strong>Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm bao nhiêu phần trăm GDP?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（到2030年，越南設定數位經濟佔GDP幾個百分比的目標？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm tối thiểu 30% GDP. Ngoài ra, tỷ lệ giao dịch không dùng tiền mặt cần đạt 80% và tỷ lệ doanh nghiệp đổi mới sáng tạo phải vượt 40%.">▶</button>
+        <span>Đến năm 2030, Việt Nam đặt mục tiêu kinh tế số chiếm tối thiểu 30% GDP. Ngoài ra, tỷ lệ giao dịch không dùng tiền mặt cần đạt 80% và tỷ lệ doanh nghiệp đổi mới sáng tạo phải vượt 40%.</span>
+      </div>
+      <div class="ans-zh">到2030年，越南設定數位經濟至少佔GDP 30%。此外，無現金交易比例需達80%，創新企業比例必須超過40%。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"bứt phá",         pos:"動詞",   zh:"突破、大幅躍進",      eg_vn:"Doanh nghiệp cần bứt phá để cạnh tranh quốc tế.",    eg_zh:"企業需要突破才能在國際上競爭。",     hv:"" },
+  { vn:"trụ cột",         pos:"名詞",   zh:"支柱、核心骨幹",      eg_vn:"Giáo dục là trụ cột của sự phát triển đất nước.",    eg_zh:"教育是國家發展的支柱。",             hv:"柱骨" },
+  { vn:"kiến tạo",        pos:"動詞",   zh:"建造、開創",          eg_vn:"Chúng ta phải kiến tạo một tương lai tốt đẹp hơn.",  eg_zh:"我們必須開創更美好的未來。",         hv:"建造" },
+  { vn:"thể chế",         pos:"名詞",   zh:"體制、制度",          eg_vn:"Cải cách thể chế là điều kiện tiên quyết.",          eg_zh:"體制改革是先決條件。",               hv:"體制" },
+  { vn:"hạ tầng",         pos:"名詞",   zh:"基礎設施",            eg_vn:"Đầu tư vào hạ tầng giúp thúc đẩy kinh tế.",         eg_zh:"投資基礎設施有助於推動經濟。",       hv:"下層→基礎" },
+  { vn:"phủ sóng",        pos:"動詞",   zh:"覆蓋訊號、全面普及",  eg_vn:"Mạng 4G đã phủ sóng hầu hết các vùng nông thôn.",  eg_zh:"4G網路已覆蓋大部分農村地區。",       hv:"" },
+  { vn:"chuyển đổi số",   pos:"名詞",   zh:"數位轉型",            eg_vn:"Chuyển đổi số là xu hướng không thể đảo ngược.",    eg_zh:"數位轉型是不可逆轉的趨勢。",         hv:"轉換數→數位轉型" },
+  { vn:"trí tuệ nhân tạo",pos:"名詞",   zh:"人工智慧（AI）",      eg_vn:"Trí tuệ nhân tạo đang thay đổi nhiều ngành nghề.", eg_zh:"人工智慧正在改變許多行業。",         hv:"智慧人造" },
+  { vn:"dữ liệu",         pos:"名詞",   zh:"資料、數據",          eg_vn:"Phân tích dữ liệu giúp đưa ra quyết định đúng.",   eg_zh:"資料分析有助於做出正確決策。",       hv:"數據" },
+  { vn:"đổi mới sáng tạo",pos:"名詞",   zh:"創新革新",            eg_vn:"Khởi nghiệp đòi hỏi tinh thần đổi mới sáng tạo.", eg_zh:"創業需要創新精神。",                 hv:"革新創造" },
+  { vn:"quy mô",          pos:"名詞",   zh:"規模",                eg_vn:"Quy mô kinh tế số Việt Nam ngày càng mở rộng.",    eg_zh:"越南數位經濟的規模日益擴大。",       hv:"規模" },
+  { vn:"giao dịch",       pos:"名詞",   zh:"交易",                eg_vn:"Giao dịch không dùng tiền mặt ngày càng phổ biến.",eg_zh:"無現金交易越來越普及。",             hv:"交易" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
