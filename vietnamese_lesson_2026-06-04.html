@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Từ 15/6, thuê bao chưa xác nhận chính chủ trên VNeID sẽ bị khóa chiều đi</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    /* ── Culture tip ── */
+    .culture-block {
+      background: #fff8e1; border: 1px solid #ffe082; border-left: 4px solid var(--gold);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 16px;
+    }
+    .culture-block h3 { font-size: 1.1rem; color: #7d6608; margin-bottom: 8px; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="0.85" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Từ 15 tháng 6, thuê bao chưa xác nhận chính chủ trên VNeID sẽ bị khóa chiều đi">▶</button>
+      <span class="vn-title">Từ 15/6, thuê bao chưa xác nhận chính chủ trên VNeID sẽ bị khóa chiều đi</span>
+    </div>
+    <div class="zh-title">6月15日起，未在VNeID確認本人門號者將被封鎖撥出功能</div>
+    <div class="meta-row">
+      <span>📅 2026-06-04</span>
+      <span>📰 <a href="https://tuoitre.vn/tu-15-6-thue-bao-chua-xac-nhan-chinh-chu-tren-vneid-se-bi-khoa-chieu-di-20260604100903819.htm" target="_blank">Tuổi Trẻ（青年報）</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Từ ngày 15 tháng 6 năm 2026, các thuê bao di động chưa được xác nhận trạng thái chính chủ trên ứng dụng VNeID sẽ bị tạm dừng dịch vụ chiều đi, bao gồm cả gọi điện và nhắn tin SMS. Đây là quy định mới do Bộ Thông tin và Truyền thông ban hành nhằm siết chặt quản lý SIM điện thoại tại Việt Nam.">▶</button>
+      <span>Từ ngày 15 tháng 6 năm 2026, các thuê bao di động chưa được xác nhận trạng thái chính chủ trên ứng dụng VNeID sẽ bị tạm dừng dịch vụ chiều đi, bao gồm cả gọi điện và nhắn tin SMS. Đây là quy định mới do Bộ Thông tin và Truyền thông ban hành nhằm siết chặt quản lý SIM điện thoại tại Việt Nam.</span>
+    </div>
+    <div class="zh-text">自2026年6月15日起，未在VNeID應用程式完成本人門號狀態確認的手機門號，將被暫停撥出服務，包括撥打電話和傳送簡訊。這是越南資訊通訊部頒布的新規定，旨在加強越南手機SIM卡的管理。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Theo thống kê mới nhất, hiện còn khoảng 25 triệu thuê bao trên cả nước chưa hoàn tất việc xác nhận trên VNeID. Người dùng cần mở ứng dụng VNeID, đăng nhập bằng tài khoản định danh, sau đó vào mục quản lý thuê bao để kiểm tra và xác nhận các số điện thoại đang sử dụng.">▶</button>
+      <span>Theo thống kê mới nhất, hiện còn khoảng 25 triệu thuê bao trên cả nước chưa hoàn tất việc xác nhận trên VNeID. Người dùng cần mở ứng dụng VNeID, đăng nhập bằng tài khoản định danh, sau đó vào mục quản lý thuê bao để kiểm tra và xác nhận các số điện thoại đang sử dụng.</span>
+    </div>
+    <div class="zh-text">根據最新統計，全國目前約有2,500萬門號尚未完成VNeID的確認手續。用戶需要開啟VNeID應用程式，使用數位身分帳號登入，接著進入「門號管理」頁面，查看並確認目前使用中的手機號碼。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Mục tiêu của chính sách này là đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia về dân cư, từ đó hạn chế tình trạng SIM rác, SIM đăng ký bằng thông tin giả mạo và các hình thức lừa đảo qua điện thoại ngày càng gia tăng. Theo Cục Viễn thông, trong vài năm gần đây, số vụ lừa đảo qua điện thoại và tin nhắn đã tăng đáng kể, gây thiệt hại lớn cho người dân.">▶</button>
+      <span>Mục tiêu của chính sách này là đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia về dân cư, từ đó hạn chế tình trạng SIM rác, SIM đăng ký bằng thông tin giả mạo và các hình thức lừa đảo qua điện thoại ngày càng gia tăng. Theo Cục Viễn thông, trong vài năm gần đây, số vụ lừa đảo qua điện thoại và tin nhắn đã tăng đáng kể, gây thiệt hại lớn cho người dân.</span>
+    </div>
+    <div class="zh-text">此政策的目標是將門號資料與全國人口資料庫同步，從而遏制垃圾SIM卡、使用假資料登記的SIM卡，以及日益猖獗的電話詐騙行為。根據電信局統計，近年來電話和簡訊詐騙案件數量顯著上升，對民眾造成重大損失。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Ngoài ra, từ ngày 15 tháng 6, các thuê bao có hoạt động thay đổi thiết bị đầu cuối cũng sẽ phải thực hiện lại xác thực sinh trắc học ảnh khuôn mặt. Cơ quan chức năng khuyến cáo người dân cần hoàn tất việc xác thực sớm để tránh bị gián đoạn dịch vụ trong cuộc sống và công việc hàng ngày.">▶</button>
+      <span>Ngoài ra, từ ngày 15 tháng 6, các thuê bao có hoạt động thay đổi thiết bị đầu cuối cũng sẽ phải thực hiện lại xác thực sinh trắc học ảnh khuôn mặt. Cơ quan chức năng khuyến cáo người dân cần hoàn tất việc xác thực sớm để tránh bị gián đoạn dịch vụ trong cuộc sống và công việc hàng ngày.</span>
+    </div>
+    <div class="zh-text">此外，自6月15日起，有更換終端設備（換新手機）記錄的門號用戶，也必須重新進行人臉生物特徵識別驗證。主管機關建議民眾盡早完成驗證手續，以避免日常生活和工作中的服務中斷。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「nhằm + 動詞」——旨在、為了</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Đây là quy định mới ban hành nhằm siết chặt quản lý SIM điện thoại tại Việt Nam.">▶</button>
+      <span>Đây là quy định mới ban hành <span class="highlight">nhằm</span> siết chặt quản lý SIM điện thoại tại Việt Nam.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">這是新頒布的規定，<span class="highlight">旨在</span>加強越南手機SIM卡的管理。</div>
+    <div class="structure-box">[主句] + nhằm + 動詞（目的子句）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">說明：nhằm 引導目的子句，等同於「為了……」，後面直接接動詞原形，語氣較為正式，常見於法規、政策或書面語。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chính phủ tổ chức chiến dịch tuyên truyền nhằm nâng cao nhận thức của người dân.">▶</button><span>Chính phủ tổ chức chiến dịch tuyên truyền <span class="highlight">nhằm</span> nâng cao nhận thức của người dân.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 政府舉辦宣傳活動，旨在提升民眾的意識。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy học tiếng Việt nhằm mở rộng cơ hội làm việc.">▶</button><span>Anh ấy học tiếng Việt <span class="highlight">nhằm</span> mở rộng cơ hội làm việc.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他學習越南語，為了拓展工作機會。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：「từ đó + 動詞」——從而、進而</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Chính sách nhằm đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia, từ đó hạn chế tình trạng SIM rác và lừa đảo qua điện thoại.">▶</button>
+      <span>Chính sách nhằm đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia, <span class="highlight">từ đó</span> hạn chế tình trạng SIM rác và lừa đảo qua điện thoại.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">此政策旨在將門號資料與全國資料庫同步，<span class="highlight">從而</span>遏制垃圾SIM卡和電話詐騙。</div>
+    <div class="structure-box">[前提行動]，từ đó + [衍生結果／目的]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">說明：từ đó 連接兩個有因果關係的子句，表示「由此」「進而」，強調前一個行動帶來的後續效果，常出現在說明文或政策文件中。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cô ấy luyện tập mỗi ngày, từ đó cải thiện kỹ năng nói tiếng Anh rõ rệt.">▶</button><span>Cô ấy luyện tập mỗi ngày, <span class="highlight">từ đó</span> cải thiện kỹ năng nói tiếng Anh rõ rệt.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 她每天練習，從而明顯改善了英語口說能力。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty đầu tư vào công nghệ mới, từ đó tăng năng suất lao động đáng kể.">▶</button><span>Công ty đầu tư vào công nghệ mới, <span class="highlight">từ đó</span> tăng năng suất lao động đáng kể.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司投資新技術，進而大幅提升了勞動生產力。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：被動語態「bị + 動詞」——被（負面情況）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Các thuê bao chưa xác nhận chính chủ sẽ bị tạm dừng dịch vụ chiều đi.">▶</button>
+      <span>Các thuê bao chưa xác nhận chính chủ sẽ <span class="highlight">bị</span> tạm dừng dịch vụ chiều đi.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">未確認本人門號的用戶將<span class="highlight">被</span>暫停撥出服務。</div>
+    <div class="structure-box">[主語] + bị + 動詞（表示不利、被動的事情發生）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">說明：bị 是越南語被動語態的助詞，用於負面或不如意的情況（如被罰款、被禁止）；正面情況則用 được（被表揚、被錄取）。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy bị phạt vì đỗ xe sai nơi quy định.">▶</button><span>Anh ấy <span class="highlight">bị</span> phạt vì đỗ xe sai nơi quy định.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他因為停車違規而被罰款。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Số điện thoại của tôi bị khóa vì chưa hoàn tất xác thực.">▶</button><span>Số điện thoại của tôi <span class="highlight">bị</span> khóa vì chưa hoàn tất xác thực.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 我的手機號碼因未完成驗證而被封鎖。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「cần + 動詞」——需要做……（義務與建議）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Người dùng cần mở ứng dụng VNeID, đăng nhập bằng tài khoản định danh để xác nhận số điện thoại.">▶</button>
+      <span>Người dùng <span class="highlight">cần</span> mở ứng dụng VNeID, đăng nhập bằng tài khoản định danh để xác nhận số điện thoại.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">用戶<span class="highlight">需要</span>開啟VNeID應用程式，使用數位身分帳號登入以確認手機號碼。</div>
+    <div class="structure-box">[主語] + cần + 動詞（表示必要性、建議或義務）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">說明：cần 表示「需要」「應該」，語氣比 phải（必須）溫和。cần 常用於提供建議或說明必要步驟，後面直接接動詞。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bạn cần uống đủ nước mỗi ngày để giữ sức khỏe.">▶</button><span>Bạn <span class="highlight">cần</span> uống đủ nước mỗi ngày để giữ sức khỏe.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 你每天需要喝足夠的水以維持健康。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chúng ta cần kiểm tra thông tin kỹ trước khi đưa ra quyết định.">▶</button><span>Chúng ta <span class="highlight">cần</span> kiểm tra thông tin kỹ trước khi đưa ra quyết định.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 我們在做決定之前需要仔細查核資訊。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+
+  <div class="culture-block">
+    <h3>VNeID 是什麼？</h3>
+    <p>VNeID（Vietnam National eID）是越南政府推出的「國家數位身分證」應用程式，由公安部管理。越南公民可用VNeID儲存電子身分證、掃描QR碼完成身份核驗，並與政府各機關的線上服務整合。自2023年起，越南積極推動電子政務，VNeID成為日常行政辦理（如機車過戶、醫療掛號、門號申辦）的重要數位工具。</p>
+  </div>
+
+  <div class="culture-block">
+    <h3>越南的SIM卡實名制背景</h3>
+    <p>越南近年來電話詐騙問題嚴重，詐騙集團常利用以假身分登記的「SIM rác」（垃圾SIM）進行詐騙。因此，資訊通訊部（Bộ TT&TT）要求所有門號必須與持有者的公民ID（CCCD）綁定，並透過VNeID進行人臉生物辨識確認。此舉與台灣的手機門號實名制精神相近，但越南採用政府App統一管理，更強調數位整合。</p>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「政府頒布新規定，旨在防止電話詐騙，保護民眾的個人資料安全。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Chính phủ ban hành quy định mới nhằm ngăn chặn lừa đảo qua điện thoại, bảo vệ thông tin cá nhân của người dân.">▶</button>
+        <span>Chính phủ ban hành quy định mới nhằm ngăn chặn lừa đảo qua điện thoại, bảo vệ thông tin cá nhân của người dân.</span>
+      </div>
+      <div class="ans-zh">政府頒布新規定，旨在防止電話詐騙，保護民眾的個人資料安全。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Từ ngày 15/6, thuê bao chưa xác nhận chính chủ sẽ ________ dịch vụ chiều đi.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）được cấp</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（B）bị tạm dừng</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（C）nhằm mở rộng</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）cần đồng bộ</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（B）bị tạm dừng</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Từ ngày 15 tháng 6, thuê bao chưa xác nhận chính chủ sẽ bị tạm dừng dịch vụ chiều đi.">▶</button>
+        <span>Từ ngày 15/6, thuê bao chưa xác nhận chính chủ sẽ <span class="highlight">bị tạm dừng</span> dịch vụ chiều đi.</span>
+      </div>
+      <div class="ans-zh">bị 用於被動的不利情況（被暫停）；được cấp（被給予）語意相反；其餘選項語法不符。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Mục tiêu chính của chính sách xác thực thuê bao qua VNeID là gì?">▶</button>
+        <strong>Mục tiêu chính của chính sách xác thực thuê bao qua VNeID là gì?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（透過VNeID驗證門號的政策主要目標是什麼？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Mục tiêu chính là đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia về dân cư, từ đó hạn chế SIM rác, SIM đăng ký bằng thông tin giả mạo và các hình thức lừa đảo qua điện thoại.">▶</button>
+        <span>Mục tiêu chính là đồng bộ hóa dữ liệu thuê bao với cơ sở dữ liệu quốc gia về dân cư, từ đó hạn chế SIM rác, SIM đăng ký bằng thông tin giả mạo và các hình thức lừa đảo qua điện thoại.</span>
+      </div>
+      <div class="ans-zh">主要目標是將門號資料與全國人口資料庫同步，從而遏制垃圾SIM卡、使用假資料登記的SIM卡，以及電話詐騙行為。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"thuê bao",       pos:"名詞",  zh:"門號、用戶、訂戶",      eg_vn:"Thuê bao của anh ấy bị mất tín hiệu.",       eg_zh:"他的門號沒有訊號。",               hv:"" },
+  { vn:"xác thực",       pos:"動詞",  zh:"驗證、認證",             eg_vn:"Bạn cần xác thực tài khoản trước khi đăng nhập.", eg_zh:"您登入前需要驗證帳號。",       hv:"確實→確認" },
+  { vn:"chính chủ",      pos:"名詞",  zh:"本人、戶名持有者",       eg_vn:"SIM chính chủ phải đăng ký bằng tên thật.",  eg_zh:"本人SIM卡必須以真實姓名登記。",    hv:"" },
+  { vn:"tạm dừng",       pos:"動詞",  zh:"暫停",                   eg_vn:"Dịch vụ tạm dừng để bảo trì hệ thống.",     eg_zh:"服務暫停以進行系統維護。",         hv:"暫停" },
+  { vn:"ban hành",       pos:"動詞",  zh:"頒布、發布（法規）",     eg_vn:"Quốc hội vừa ban hành luật mới.",            eg_zh:"國會剛頒布了新法律。",             hv:"頒行" },
+  { vn:"đồng bộ hóa",   pos:"動詞",  zh:"同步化",                 eg_vn:"Cần đồng bộ hóa dữ liệu giữa các ứng dụng.", eg_zh:"需要同步各應用程式之間的資料。",   hv:"同步化" },
+  { vn:"cơ sở dữ liệu", pos:"名詞",  zh:"資料庫",                 eg_vn:"Cơ sở dữ liệu lưu trữ thông tin khách hàng.", eg_zh:"資料庫儲存客戶資訊。",             hv:"基礎資料" },
+  { vn:"lừa đảo",        pos:"動詞/名詞", zh:"詐騙",               eg_vn:"Cẩn thận với các cuộc gọi lừa đảo.",         eg_zh:"小心詐騙電話。",                   hv:"" },
+  { vn:"sinh trắc học",  pos:"名詞",  zh:"生物特徵識別學",         eg_vn:"Công nghệ sinh trắc học giúp bảo mật tốt hơn.", eg_zh:"生物特徵識別技術有助於更好的安全防護。", hv:"生蹟學" },
+  { vn:"định danh",      pos:"名詞/動詞", zh:"數位身分、身份識別",  eg_vn:"Tài khoản định danh điện tử ngày càng quan trọng.", eg_zh:"電子身分帳號越來越重要。",    hv:"定名" },
+  { vn:"gián đoạn",      pos:"動詞/名詞", zh:"中斷、間斷",         eg_vn:"Mưa lớn gây gián đoạn điện lưới.",           eg_zh:"大雨導致電網中斷。",               hv:"間斷" },
+  { vn:"khuyến cáo",     pos:"動詞",  zh:"建議、勸告、警示",       eg_vn:"Bác sĩ khuyến cáo nên uống nhiều nước.",     eg_zh:"醫生建議多喝水。",                 hv:"勸告" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
