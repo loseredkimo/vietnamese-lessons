@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜VinRobotics lần đầu trình diễn người máy "Make in Vietnam"</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="0.85" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <!-- 預設佔位，JS 載入後自動換成 Microsoft An -->
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <!-- 瀏覽器內建語音（含 Microsoft An vi-VN），由 JS 動態填入 -->
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <!-- Google Cloud 語音群組 -->
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="VinRobotics lần đầu trình diễn người máy 'Make in Vietnam' tại loạt sự kiện công nghệ quốc tế">▶</button>
+      <span class="vn-title">VinRobotics lần đầu trình diễn người máy "Make in Vietnam" tại loạt sự kiện công nghệ quốc tế</span>
+    </div>
+    <div class="zh-title">VinRobotics首度於系列國際科技活動展示「越南製造」人形機器人</div>
+    <div class="meta-row">
+      <span>📅 2026-06-09</span>
+      <span>📰 <a href="https://vov.vn/doanh-nghiep/vinrobotics-lan-dau-trinh-dien-nguoi-may-make-in-vietnam-o-loat-su-kien-quoc-te-post1297455.vov" target="_blank">VOV（越南之聲）</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Người máy hình người VR-H3 do công ty VinRobotics thuộc Tập đoàn Vingroup phát triển đã lần đầu tiên được giới thiệu tại các sự kiện công nghệ quốc tế lớn vào tháng 6 năm 2026, thu hút sự chú ý của đông đảo khách tham quan và giới truyền thông.">▶</button>
+      <span>Người máy hình người VR-H3 do công ty VinRobotics thuộc Tập đoàn Vingroup phát triển đã lần đầu tiên được giới thiệu tại các sự kiện công nghệ quốc tế lớn vào tháng 6 năm 2026, thu hút sự chú ý của đông đảo khách tham quan và giới truyền thông.</span>
+    </div>
+    <div class="zh-text">由Vingroup集團旗下VinRobotics公司開發的VR-H3人形機器人，於2026年6月首度在大型國際科技活動中亮相，吸引了眾多參觀者與媒體的關注。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="VR-H3 là thế hệ người máy thứ ba, được trang bị hơn 31 động cơ cùng hai bộ máy tính biên, giúp robot có khả năng nhận diện môi trường, tương tác với con người, cũng như thực hiện các thao tác như nâng, vận chuyển và lắp ráp vật thể nặng từ 6 đến 8 kg.">▶</button>
+      <span>VR-H3 là thế hệ người máy thứ ba, được trang bị hơn 31 động cơ cùng hai bộ máy tính biên, giúp robot có khả năng nhận diện môi trường, tương tác với con người, cũng như thực hiện các thao tác như nâng, vận chuyển và lắp ráp vật thể nặng từ 6 đến 8 kg.</span>
+    </div>
+    <div class="zh-text">VR-H3是第三代人形機器人，配備超過31個馬達及兩台邊緣運算裝置，使機器人具備辨識環境、與人互動的能力，並能執行搬運、運送及組裝6至8公斤重物的操作。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Điểm đặc biệt là toàn bộ công nghệ lõi của VR-H3, từ thiết kế cơ khí, hệ thống tính toán thời gian thực, hệ thống phân phối điện, pin, động cơ hiệu suất cao, bàn tay robot cho đến nền tảng trí tuệ nhân tạo điều khiển toàn thân, đều do chính các kỹ sư Việt Nam nghiên cứu và phát triển.">▶</button>
+      <span>Điểm đặc biệt là toàn bộ công nghệ lõi của VR-H3, từ thiết kế cơ khí, hệ thống tính toán thời gian thực, hệ thống phân phối điện, pin, động cơ hiệu suất cao, bàn tay robot cho đến nền tảng trí tuệ nhân tạo điều khiển toàn thân, đều do chính các kỹ sư Việt Nam nghiên cứu và phát triển.</span>
+    </div>
+    <div class="zh-text">特別之處在於，VR-H3的核心技術——從機械設計、即時運算系統、電力分配系統、電池、高效能馬達、機器人手部，到控制全身的人工智慧平台——全部都是由越南工程師自主研發完成的。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Từ cuối tháng 5 đến đầu tháng 6, VR-H3 đã được trình diễn liên tục tại nhiều sự kiện công nghệ và robot hàng đầu thế giới, trong đó có Hội nghị ICRA 2026, Festival der Roboter 2026 tại Áo và triển lãm Computex Taipei 2026 tại Đài Loan. Robot có thể được điều khiển từ xa thông qua công nghệ ghi nhận chuyển động trên kính thực tế ảo, mà không cần thiết bị hỗ trợ bên ngoài.">▶</button>
+      <span>Từ cuối tháng 5 đến đầu tháng 6, VR-H3 đã được trình diễn liên tục tại nhiều sự kiện công nghệ và robot hàng đầu thế giới, trong đó có Hội nghị ICRA 2026, Festival der Roboter 2026 tại Áo và triển lãm Computex Taipei 2026 tại Đài Loan. Robot có thể được điều khiển từ xa thông qua công nghệ ghi nhận chuyển động trên kính thực tế ảo, mà không cần thiết bị hỗ trợ bên ngoài.</span>
+    </div>
+    <div class="zh-text">從五月底到六月初，VR-H3持續在多個國際頂尖科技與機器人活動中展示，其中包括2026年ICRA國際機器人與自動化會議、奧地利的「機器人節」（Festival der Roboter 2026），以及台灣的台北國際電腦展（Computex Taipei 2026）。該機器人可透過VR眼鏡上的動作捕捉技術進行遠端操控，不需要外部輔助設備。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「do + 行為者 + 動詞」——表示來源、由誰所做</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Người máy VR-H3 do công ty VinRobotics phát triển.">▶</button>
+      <span>Người máy VR-H3 <span class="highlight">do</span> công ty VinRobotics phát triển.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">VR-H3人形機器人<span class="highlight">是由</span>VinRobotics公司所開發。</div>
+    <div class="structure-box">[事物] + do + [行為者] + [動詞]</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cuốn sách này do một nhà văn nổi tiếng viết.">▶</button><span>Cuốn sách này <span class="highlight">do</span> một nhà văn nổi tiếng viết.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 這本書是由一位知名作家所寫。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Dự án này do chính phủ tài trợ.">▶</button><span>Dự án này <span class="highlight">do</span> chính phủ tài trợ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 這項計畫是由政府所資助。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：被動語態「được + 動詞」——獲得、被</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="VR-H3 được trang bị hơn 31 động cơ cùng hai bộ máy tính biên.">▶</button>
+      <span>VR-H3 <span class="highlight">được trang bị</span> hơn 31 động cơ cùng hai bộ máy tính biên.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">VR-H3<span class="highlight">配備了</span>超過31個馬達及兩台邊緣運算裝置。</div>
+    <div class="structure-box">[主語] + được + [動詞] + [賓語]（用於正面、有利的結果）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Phòng học được trang bị máy chiếu mới.">▶</button><span>Phòng học <span class="highlight">được trang bị</span> máy chiếu mới.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 教室配備了新的投影機。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy được tặng một món quà đặc biệt.">▶</button><span>Anh ấy <span class="highlight">được tặng</span> một món quà đặc biệt.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他收到了一份特別的禮物。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：「từ ... đến ...」——表示時間或範圍的起訖</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Từ cuối tháng 5 đến đầu tháng 6, VR-H3 đã được trình diễn liên tục tại nhiều sự kiện công nghệ.">▶</button>
+      <span><span class="highlight">Từ</span> cuối tháng 5 <span class="highlight">đến</span> đầu tháng 6, VR-H3 đã được trình diễn liên tục tại nhiều sự kiện công nghệ.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;"><span class="highlight">從</span>五月底<span class="highlight">到</span>六月初，VR-H3持續在多個科技活動中展示。</div>
+    <div class="structure-box">Từ + [起點] + đến + [終點]</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Từ thứ Hai đến thứ Sáu, tôi đều đi làm.">▶</button><span><span class="highlight">Từ</span> thứ Hai <span class="highlight">đến</span> thứ Sáu, tôi đều đi làm.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 從星期一到星期五，我都要上班。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Từ Hà Nội đến Đà Nẵng mất khoảng một giờ bay.">▶</button><span><span class="highlight">Từ</span> Hà Nội <span class="highlight">đến</span> Đà Nẵng mất khoảng một giờ bay.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 從河內到峴港大約需要一小時的飛行時間。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「có thể ... mà không cần ...」——可以……而不需要……</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Robot có thể được điều khiển từ xa mà không cần thiết bị hỗ trợ bên ngoài.">▶</button>
+      <span>Robot <span class="highlight">có thể</span> được điều khiển từ xa <span class="highlight">mà không cần</span> thiết bị hỗ trợ bên ngoài.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">機器人<span class="highlight">可以</span>被遠端操控，<span class="highlight">而不需要</span>外部輔助設備。</div>
+    <div class="structure-box">[主語] + có thể + [動詞] + mà không cần + [動詞]</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bạn có thể thanh toán bằng điện thoại mà không cần mang theo tiền mặt.">▶</button><span>Bạn <span class="highlight">có thể</span> thanh toán bằng điện thoại <span class="highlight">mà không cần</span> mang theo tiền mặt.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 你可以用手機付款，而不需要攜帶現金。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cô ấy có thể nói tiếng Anh mà không cần phiên dịch.">▶</button><span>Cô ấy <span class="highlight">có thể</span> nói tiếng Anh <span class="highlight">mà không cần</span> phiên dịch.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 她可以說英語，而不需要翻譯。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+  <div class="para-block">
+    <div class="zh-text" style="border-left:3px solid var(--accent);">
+      「Make in Vietnam」是越南政府近年推動的口號，鼓勵本國企業從單純的「組裝代工」轉型為「自主研發、設計與製造」，強調核心技術掌握在越南人手中。VinRobotics是越南最大民營企業集團Vingroup旗下的機器人公司，VR-H3的亮相被視為越南科技產業邁向國際舞台的重要指標之一，也呼應了今年稍早越南政府成立「國家戰略科技工作小組」的政策方向。
+    </div>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「這台機器人配備了人工智慧平台，可以自主辨識周圍的環境。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Người máy này được trang bị nền tảng trí tuệ nhân tạo, có thể tự nhận diện môi trường xung quanh.">▶</button>
+        <span>Người máy này được trang bị nền tảng trí tuệ nhân tạo, có thể tự nhận diện môi trường xung quanh.</span>
+      </div>
+      <div class="ans-zh">這台機器人配備了人工智慧平台，可以自主辨識周圍的環境。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「VR-H3 là thế hệ người máy thứ ba, ________ hơn 31 động cơ cùng hai bộ máy tính biên.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）trình diễn</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（B）được trang bị</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（C）vận chuyển</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）lắp ráp</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（B）được trang bị</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="VR-H3 là thế hệ người máy thứ ba, được trang bị hơn 31 động cơ cùng hai bộ máy tính biên.">▶</button>
+        <span>VR-H3 là thế hệ người máy thứ ba, <span class="highlight">được trang bị</span> hơn 31 động cơ cùng hai bộ máy tính biên.</span>
+      </div>
+      <div class="ans-zh">được trang bị = 配備（被動語態）；其餘選項語意不符句子結構。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="VR-H3 đã được trình diễn tại những sự kiện công nghệ quốc tế nào?">▶</button>
+        <strong>VR-H3 đã được trình diễn tại những sự kiện công nghệ quốc tế nào?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（VR-H3曾在哪些國際科技活動中展示？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="VR-H3 đã được trình diễn tại Hội nghị ICRA 2026, Festival der Roboter 2026 ở Áo và triển lãm Computex Taipei 2026 tại Đài Loan.">▶</button>
+        <span>VR-H3 đã được trình diễn tại Hội nghị ICRA 2026, Festival der Roboter 2026 ở Áo và triển lãm Computex Taipei 2026 tại Đài Loan.</span>
+      </div>
+      <div class="ans-zh">VR-H3曾在2026年ICRA國際機器人與自動化會議、奧地利的「機器人節」（Festival der Roboter 2026），以及台灣的台北國際電腦展（Computex Taipei 2026）中展示。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"người máy",   pos:"名詞",  zh:"機器人、人形機器人",  eg_vn:"Công ty đang nghiên cứu một loại người máy mới.",     eg_zh:"那家公司正在研發一種新型機器人。",       hv:"" },
+  { vn:"trình diễn",  pos:"動詞",  zh:"展示、表演",           eg_vn:"Đội múa sẽ trình diễn vào tối nay.",                  eg_zh:"舞蹈隊今晚將進行表演。",                 hv:"呈演" },
+  { vn:"trang bị",    pos:"動詞",  zh:"配備、裝備",           eg_vn:"Phòng thí nghiệm được trang bị máy móc hiện đại.",   eg_zh:"實驗室配備了現代化的機器設備。",         hv:"裝備" },
+  { vn:"động cơ",     pos:"名詞",  zh:"馬達、引擎",           eg_vn:"Chiếc xe này dùng động cơ điện.",                    eg_zh:"這輛車使用的是電動馬達。",               hv:"動機" },
+  { vn:"nâng",        pos:"動詞",  zh:"抬起、舉起",           eg_vn:"Anh ấy nâng chiếc hộp lên vai.",                     eg_zh:"他把箱子扛到肩上。",                     hv:"" },
+  { vn:"vận chuyển",  pos:"動詞",  zh:"運送、運輸",           eg_vn:"Công ty này chuyên vận chuyển hàng hóa quốc tế.",    eg_zh:"這家公司專門從事國際貨物運輸。",         hv:"運轉" },
+  { vn:"lắp ráp",     pos:"動詞",  zh:"組裝",                 eg_vn:"Nhà máy lắp ráp ô tô tại đây rất lớn.",              eg_zh:"這裡的汽車組裝工廠規模很大。",           hv:"" },
+  { vn:"nền tảng",    pos:"名詞",  zh:"平台、基礎",           eg_vn:"Ứng dụng này chạy trên nền tảng đám mây.",           eg_zh:"這個應用程式運行在雲端平台上。",         hv:"" },
+  { vn:"điều khiển",  pos:"動詞",  zh:"操控、控制",           eg_vn:"Cô ấy điều khiển máy bay không người lái rất giỏi.", eg_zh:"她操控無人機操控得非常熟練。",           hv:"" },
+  { vn:"tự chủ",      pos:"形容詞",zh:"自主的",               eg_vn:"Việt Nam đang đẩy mạnh tự chủ công nghệ.",           eg_zh:"越南正在加強技術自主。",                 hv:"自主" },
+  { vn:"ấn tượng",    pos:"形容詞",zh:"印象深刻的",           eg_vn:"Bài thuyết trình của cô ấy rất ấn tượng.",           eg_zh:"她的簡報令人印象深刻。",                 hv:"印象" },
+  { vn:"sự kiện",     pos:"名詞",  zh:"活動、事件",           eg_vn:"Sự kiện này thu hút nhiều doanh nghiệp tham gia.",   eg_zh:"這個活動吸引了許多企業參與。",           hv:"事件" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;   // 尚未就緒
+  if (voicesLoaded) return true;      // 避免重複執行
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  // 越南語語音排最前面
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  // 預設選中第一個越南語瀏覽器語音
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+// 策略1：onvoiceschanged 事件（Chrome 標準路徑）
+synth.onvoiceschanged = loadBrowserVoices;
+
+// 策略2：立刻試一次（Firefox / Safari 同步回傳）
+loadBrowserVoices();
+
+// 策略3：多段延遲重試（Chrome 有時延遲數百毫秒）
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
