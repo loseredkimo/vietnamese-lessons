@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Luật Thương mại điện tử 2025: Livestream và Tiếp thị liên kết</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    /* ── Culture tip ── */
+    .culture-block {
+      background: #fff8e1; border: 1px solid #ffe082;
+      border-left: 4px solid var(--gold); border-radius: 12px;
+      padding: 16px 20px; margin-bottom: 16px; font-size: 1.1rem;
+    }
+    .culture-block p { margin-bottom: 8px; }
+    .culture-block p:last-child { margin-bottom: 0; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="1.0" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Từ 1/7/2026, người livestream bán hàng và tiếp thị liên kết chịu quản lý chặt hơn">▶</button>
+      <span class="vn-title">Từ 1/7/2026, người livestream bán hàng và tiếp thị liên kết chịu quản lý chặt hơn</span>
+    </div>
+    <div class="zh-title">2026年7月1日起，直播帶貨與聯盟行銷受到更嚴格法規管制</div>
+    <div class="meta-row">
+      <span>📅 2026-07-01</span>
+      <span>📰 <a href="https://vnreview.vn/threads/tu-1-7-2026-nguoi-ban-online-livestream-va-affiliate-can-biet-nhung-quy-dinh-moi-nay.85821/" target="_blank">VnReview</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Luật Thương mại điện tử 2025 chính thức có hiệu lực từ ngày 1/7/2026, đánh dấu bước ngoặt quan trọng trong việc đưa các mô hình kinh doanh số hiện đại như livestream bán hàng và tiếp thị liên kết vào khuôn khổ pháp lý. Đây là lần đầu tiên Việt Nam có luật riêng điều chỉnh hai hình thức kinh doanh trực tuyến đang bùng nổ này.">▶</button>
+      <span>Luật Thương mại điện tử 2025 chính thức có hiệu lực từ ngày 1/7/2026, đánh dấu bước ngoặt quan trọng trong việc đưa các mô hình kinh doanh số hiện đại như livestream bán hàng và tiếp thị liên kết vào khuôn khổ pháp lý. Đây là lần đầu tiên Việt Nam có luật riêng điều chỉnh hai hình thức kinh doanh trực tuyến đang bùng nổ này.</span>
+    </div>
+    <div class="zh-text">2025年《電子商務法》自2026年7月1日正式生效，標誌著越南將直播帶貨、聯盟行銷等現代數位商業模式納入法律框架的重要里程碑。這是越南首次制定專門法律，規範這兩種正在蓬勃發展的網路銷售形式。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Theo luật mới, người livestream bán hàng phải hoàn thành xác thực danh tính điện tử trước khi được phép phát sóng. Người livestream không được cung cấp thông tin sai lệch hoặc gây hiểu nhầm về nguồn gốc, chất lượng, giá cả, chương trình khuyến mãi hay chính sách bảo hành của sản phẩm. Vi phạm có thể bị xử phạt hành chính hoặc truy cứu trách nhiệm hình sự.">▶</button>
+      <span>Theo luật mới, người livestream bán hàng phải hoàn thành xác thực danh tính điện tử trước khi được phép phát sóng. Người livestream không được cung cấp thông tin sai lệch hoặc gây hiểu nhầm về nguồn gốc, chất lượng, giá cả, chương trình khuyến mãi hay chính sách bảo hành của sản phẩm. Vi phạm có thể bị xử phạt hành chính hoặc truy cứu trách nhiệm hình sự.</span>
+    </div>
+    <div class="zh-text">依據新法，直播帶貨者在獲准開播前必須完成電子身份驗證。直播主不得提供關於產品來源、品質、價格、促銷方案或保固政策的不實或誤導性資訊。違規者可能面臨行政罰款，嚴重者將被追究刑事責任。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Đối với tiếp thị liên kết, tổ chức cung cấp dịch vụ affiliate phải xác thực danh tính của người tham gia và kiểm soát nội dung quảng bá nhằm hạn chế quảng cáo các sản phẩm hoặc dịch vụ vi phạm pháp luật. Người tham gia tiếp thị liên kết cũng phải bảo đảm tính minh bạch và không được cung cấp nội dung giả mạo nhằm thu hút người tiêu dùng.">▶</button>
+      <span>Đối với tiếp thị liên kết, tổ chức cung cấp dịch vụ affiliate phải xác thực danh tính của người tham gia và kiểm soát nội dung quảng bá nhằm hạn chế quảng cáo các sản phẩm hoặc dịch vụ vi phạm pháp luật. Người tham gia tiếp thị liên kết cũng phải bảo đảm tính minh bạch và không được cung cấp nội dung giả mạo nhằm thu hút người tiêu dùng.</span>
+    </div>
+    <div class="zh-text">就聯盟行銷而言，提供聯盟行銷服務的組織必須驗證參與者身份，並管控推廣內容，旨在限制對違法產品或服務的廣告宣傳。聯盟行銷參與者同樣須確保資訊透明，不得為吸引消費者而提供虛假內容。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Các nền tảng thương mại điện tử trung gian phải chịu trách nhiệm liên đới nếu thuật toán của họ che giấu vi phạm hoặc gây thiệt hại cho người mua. Nền tảng cũng có nghĩa vụ công khai quy chế hoạt động, kiểm tra thông tin người bán và cung cấp công cụ khiếu nại cho người tiêu dùng.">▶</button>
+      <span>Các nền tảng thương mại điện tử trung gian phải chịu trách nhiệm liên đới nếu thuật toán của họ che giấu vi phạm hoặc gây thiệt hại cho người mua. Nền tảng cũng có nghĩa vụ công khai quy chế hoạt động, kiểm tra thông tin người bán và cung cấp công cụ khiếu nại cho người tiêu dùng.</span>
+    </div>
+    <div class="zh-text">若電子商務中介平台的演算法隱藏了違規行為或對買家造成損害，平台必須承擔連帶責任。平台也有義務公開營運規章、核查賣家資訊，並提供消費者投訴工具。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Các chuyên gia nhận định rằng Luật Thương mại điện tử 2025 sẽ giúp lành mạnh hóa thị trường bán hàng trực tuyến và tạo môi trường cạnh tranh bình đẳng hơn. Người bán hàng online, streamer và affiliate marketer cần cập nhật đầy đủ các quy định mới để tránh bị xử phạt.">▶</button>
+      <span>Các chuyên gia nhận định rằng Luật Thương mại điện tử 2025 sẽ giúp lành mạnh hóa thị trường bán hàng trực tuyến và tạo môi trường cạnh tranh bình đẳng hơn. Người bán hàng online, streamer và affiliate marketer cần cập nhật đầy đủ các quy định mới để tránh bị xử phạt.</span>
+    </div>
+    <div class="zh-text">專家認為，2025年《電子商務法》將有助於淨化網路銷售市場，並創造更公平的競爭環境。網路賣家、直播主與聯盟行銷人員需全面了解最新規定，以避免遭受處罰。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：phải + 動詞——必須（表義務）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Người livestream bán hàng phải hoàn thành xác thực danh tính điện tử trước khi được phép phát sóng.">▶</button>
+      <span>Người livestream bán hàng <span class="highlight">phải</span> hoàn thành xác thực danh tính điện tử trước khi được phép phát sóng.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">直播帶貨者<span class="highlight">必須</span>在獲准開播前完成電子身份驗證。</div>
+    <div class="structure-box">[主語] + phải + 動詞（類似英文 must / have to，表示規定或義務）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Học sinh phải đến trường đúng giờ.">▶</button><span>Học sinh <span class="highlight">phải</span> đến trường đúng giờ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 學生必須準時到校。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bạn phải đăng ký tài khoản trước khi sử dụng dịch vụ này.">▶</button><span>Bạn <span class="highlight">phải</span> đăng ký tài khoản trước khi sử dụng dịch vụ này.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 使用此服務前你必須先註冊帳號。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：không được + 動詞——不可以、禁止（禁令）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Người livestream không được cung cấp thông tin sai lệch về sản phẩm.">▶</button>
+      <span>Người livestream <span class="highlight">không được</span> cung cấp thông tin sai lệch về sản phẩm.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">直播主<span class="highlight">不可以</span>提供關於產品的不實資訊。</div>
+    <div class="structure-box">[主語] + không được + 動詞（禁令句，比 không nên「不應該」語氣更強）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bạn không được chụp ảnh trong bảo tàng.">▶</button><span>Bạn <span class="highlight">không được</span> chụp ảnh trong bảo tàng.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 你不可以在博物館裡拍照。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Người lái xe không được sử dụng điện thoại khi đang lái.">▶</button><span>Người lái xe <span class="highlight">không được</span> sử dụng điện thoại khi đang lái.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 駕駛人行車時不可以使用手機。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：được coi là——被視為、被認為是（被動語態）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Đây được coi là bước tiến quan trọng trong việc bảo vệ quyền lợi người tiêu dùng.">▶</button>
+      <span>Đây <span class="highlight">được coi là</span> bước tiến quan trọng trong việc bảo vệ quyền lợi người tiêu dùng.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">這<span class="highlight">被視為</span>保護消費者權益的重要進步。</div>
+    <div class="structure-box">[主語] + được coi là + [名詞／形容詞]（被動表達，意為「被認為是～」）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Hà Nội được coi là trung tâm văn hóa của Việt Nam.">▶</button><span>Hà Nội <span class="highlight">được coi là</span> trung tâm văn hóa của Việt Nam.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 河內被視為越南的文化中心。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cô ấy được coi là chuyên gia hàng đầu trong lĩnh vực công nghệ.">▶</button><span>Cô ấy <span class="highlight">được coi là</span> chuyên gia hàng đầu trong lĩnh vực công nghệ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 她被視為科技領域的頂尖專家。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：nhằm + 動詞——旨在、為了（正式目的連接詞）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Tổ chức phải kiểm soát nội dung quảng bá nhằm hạn chế quảng cáo sản phẩm vi phạm pháp luật.">▶</button>
+      <span>Tổ chức phải kiểm soát nội dung quảng bá <span class="highlight">nhằm</span> hạn chế quảng cáo sản phẩm vi phạm pháp luật.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">組織必須管控推廣內容，<span class="highlight">旨在</span>限制違法產品的廣告宣傳。</div>
+    <div class="structure-box">[主句] + nhằm + 動詞（目的連接詞，比 để 更正式，常見於書面語）</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chính phủ ban hành luật mới nhằm bảo vệ người tiêu dùng trực tuyến.">▶</button><span>Chính phủ ban hành luật mới <span class="highlight">nhằm</span> bảo vệ người tiêu dùng trực tuyến.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 政府頒布新法，旨在保護網路消費者。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty tổ chức khóa đào tạo nhằm nâng cao kỹ năng số cho nhân viên.">▶</button><span>Công ty tổ chức khóa đào tạo <span class="highlight">nhằm</span> nâng cao kỹ năng số cho nhân viên.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司舉辦培訓課程，旨在提升員工的數位技能。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+  <div class="culture-block">
+    <p>越南電商市場是東南亞成長最快的市場之一，Shopee、Lazada、TikTok Shop 等平台在越南擁有龐大用戶群。直播帶貨（livestream bán hàng）近年來尤其盛行，不少越南網紅（KOL/KOC）透過直播每月銷售數千至數萬件商品。然而因不實廣告與詐騙事件頻傳，越南政府決定透過立法加以規範，2025年電商法即為此背景下的重要成果。</p>
+    <p>「tiếp thị liên kết」（聯盟行銷）在越南語中是從英文 affiliate marketing 直接翻譯而來。越南語大量使用漢越詞（từ Hán Việt）混搭英借詞的現象，反映了數位時代越南語詞彙快速演變的特色。例如「thương mại」（商貿）、「điện tử」（電子）、「minh bạch」（明白→透明）都是常見漢越詞。</p>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「平台業者必須公開營運規章，並承擔連帶責任，旨在保護消費者的權益。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Nền tảng phải công khai quy chế hoạt động và chịu trách nhiệm liên đới nhằm bảo vệ quyền lợi người tiêu dùng.">▶</button>
+        <span>Nền tảng phải công khai quy chế hoạt động và chịu trách nhiệm liên đới nhằm bảo vệ quyền lợi người tiêu dùng.</span>
+      </div>
+      <div class="ans-zh">平台業者必須公開營運規章，並承擔連帶責任，旨在保護消費者的權益。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Người livestream không ________ cung cấp thông tin sai lệch về giá cả hay chất lượng sản phẩm.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）phải</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（B）được</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（C）nhằm</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）coi là</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（B）được → không được = 不可以</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Người livestream không được cung cấp thông tin sai lệch về giá cả hay chất lượng sản phẩm.">▶</button>
+        <span>Người livestream <span class="highlight">không được</span> cung cấp thông tin sai lệch về giá cả hay chất lượng sản phẩm.</span>
+      </div>
+      <div class="ans-zh">không được = 不可以（禁令）；phải = 必須；nhằm = 旨在；coi là = 視為，語意均不符。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Theo luật mới, nền tảng thương mại điện tử phải thực hiện những nghĩa vụ gì?">▶</button>
+        <strong>Theo luật mới, nền tảng thương mại điện tử phải thực hiện những nghĩa vụ gì?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（依據新法，電子商務平台必須履行哪些義務？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Theo luật mới, nền tảng thương mại điện tử phải công khai quy chế hoạt động, kiểm tra thông tin người bán và cung cấp công cụ khiếu nại cho người tiêu dùng. Ngoài ra, nền tảng còn phải chịu trách nhiệm liên đới nếu thuật toán của họ che giấu vi phạm hoặc gây thiệt hại cho người mua.">▶</button>
+        <span>Theo luật mới, nền tảng thương mại điện tử phải công khai quy chế hoạt động, kiểm tra thông tin người bán và cung cấp công cụ khiếu nại cho người tiêu dùng. Ngoài ra, nền tảng còn phải chịu trách nhiệm liên đới nếu thuật toán của họ che giấu vi phạm hoặc gây thiệt hại cho người mua.</span>
+      </div>
+      <div class="ans-zh">依據新法，電子商務平台必須公開營運規章、核查賣家資訊，並提供消費者投訴工具。此外，若平台的演算法隱藏了違規行為或對買家造成損害，平台還須承擔連帶責任。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"thương mại điện tử", pos:"名詞",     zh:"電子商務",             eg_vn:"Thương mại điện tử tại Việt Nam tăng trưởng mạnh mẽ.",          eg_zh:"越南的電子商務成長強勁。",             hv:"商貿電子→電子商務" },
+  { vn:"livestream bán hàng",pos:"動詞片語", zh:"直播帶貨、直播銷售",   eg_vn:"Nhiều người trẻ chọn nghề livestream bán hàng.",                 eg_zh:"許多年輕人選擇直播帶貨作為職業。",     hv:"" },
+  { vn:"tiếp thị liên kết",  pos:"名詞",     zh:"聯盟行銷",             eg_vn:"Cô ấy kiếm thu nhập qua tiếp thị liên kết.",                    eg_zh:"她透過聯盟行銷賺取收入。",             hv:"" },
+  { vn:"xác thực danh tính", pos:"動詞片語", zh:"驗證身份、身份認證",   eg_vn:"Người dùng phải xác thực danh tính trước khi đăng ký.",         eg_zh:"用戶在註冊前必須驗證身份。",           hv:"確識身份" },
+  { vn:"nền tảng",           pos:"名詞",     zh:"平台（數位）",          eg_vn:"Nền tảng này có hàng triệu người dùng.",                        eg_zh:"這個平台擁有數百萬用戶。",             hv:"" },
+  { vn:"sai lệch",           pos:"形容詞",   zh:"不實的、有偏差的",     eg_vn:"Thông tin sai lệch có thể gây hại cho người tiêu dùng.",        eg_zh:"不實資訊可能對消費者造成傷害。",       hv:"" },
+  { vn:"khuyến mãi",         pos:"名詞",     zh:"促銷、優惠活動",        eg_vn:"Chương trình khuyến mãi thu hút rất nhiều khách hàng.",         eg_zh:"促銷活動吸引了非常多顧客。",           hv:"勸賣→促銷" },
+  { vn:"thuật toán",         pos:"名詞",     zh:"演算法",                eg_vn:"Thuật toán mạng xã hội ảnh hưởng đến nội dung bạn thấy.",       eg_zh:"社群媒體的演算法影響你所看到的內容。", hv:"" },
+  { vn:"minh bạch",          pos:"形容詞",   zh:"透明的、公開的",        eg_vn:"Thông tin tài chính cần được công bố minh bạch.",               eg_zh:"財務資訊需要透明公開。",               hv:"明白→透明" },
+  { vn:"vi phạm",            pos:"動詞／名詞",zh:"違規、違法",           eg_vn:"Hành vi vi phạm pháp luật sẽ bị xử lý nghiêm.",                eg_zh:"違法行為將被嚴厲處理。",               hv:"違犯→違規" },
+  { vn:"chịu trách nhiệm",   pos:"動詞片語", zh:"承擔責任",              eg_vn:"Mỗi người phải chịu trách nhiệm về hành động của mình.",        eg_zh:"每個人都必須對自己的行為承擔責任。",   hv:"持責任" },
+  { vn:"bảo hành",           pos:"名詞／動詞",zh:"保固、保修",           eg_vn:"Điện thoại này được bảo hành 24 tháng.",                        eg_zh:"這支手機享有24個月保固。",             hv:"保行→保修" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
