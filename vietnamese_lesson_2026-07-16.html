@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Thị trường xe máy điện 2026: Cuộc đua công nghệ và đợt giảm giá kỷ lục</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Culture note ── */
+    .culture-block {
+      background: #fff8f0; border: 1px solid #f5cba7;
+      border-left: 4px solid var(--gold); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .culture-block h3 { font-size: 1.15rem; color: #7d5a00; margin-bottom: 10px; }
+    .culture-block p { font-size: 1.075rem; color: var(--text); margin-bottom: 8px; }
+    .culture-block p:last-child { margin-bottom: 0; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="1.0" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Thị trường xe máy điện 2026: Cuộc đua công nghệ và đợt giảm giá kỷ lục từ Honda, VinFast">▶</button>
+      <span class="vn-title">Thị trường xe máy điện 2026: Cuộc đua công nghệ và đợt giảm giá kỷ lục từ Honda, VinFast</span>
+    </div>
+    <div class="zh-title">2026年電動機車市場：科技競賽與Honda、VinFast的破紀錄降價潮</div>
+    <div class="meta-row">
+      <span>📅 2026-07-15</span>
+      <span>📰 <a href="https://vietgiaitri.com/thi-truong-xe-may-dien-2026-cuoc-dua-cong-nghe-va-dot-giam-gia-ky-luc-tu-honda-vinfast-20260715i7735038/" target="_blank">Việt Giải Trí</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Thị trường xe máy điện Việt Nam nửa đầu năm 2026 ghi nhận sự sôi động chưa từng có với hàng loạt model mới và chiến lược giảm giá niêm yết mạnh tay từ các ông lớn như Honda, Yamaha và VinFast, nhằm giành thị phần trong bối cảnh cạnh tranh ngày càng khốc liệt.">▶</button>
+      <span>Thị trường xe máy điện Việt Nam nửa đầu năm 2026 ghi nhận sự sôi động chưa từng có với hàng loạt model mới và chiến lược giảm giá niêm yết mạnh tay từ các ông lớn như Honda, Yamaha và VinFast, nhằm giành thị phần trong bối cảnh cạnh tranh ngày càng khốc liệt.</span>
+    </div>
+    <div class="zh-text">2026年上半年越南電動機車市場出現前所未有的熱絡，Honda、Yamaha和VinFast等大廠紛紛推出新車型並大幅調降定價，目的在於在競爭日趨激烈的環境中搶佔市場份額。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Honda Việt Nam đã tiên phong giảm giá niêm yết mẫu ICON e xuống còn 20,5 triệu đồng, tương đương mức giảm gần 6 triệu đồng. Mẫu xe cao cấp UC3 cũng được điều chỉnh giảm trực tiếp 22 triệu đồng, đưa mức giá thực tế xuống còn 56,5 triệu đồng — mức giảm được đánh giá là kỷ lục trong lịch sử xe điện của hãng tại Việt Nam.">▶</button>
+      <span>Honda Việt Nam đã tiên phong giảm giá niêm yết mẫu ICON e xuống còn 20,5 triệu đồng, tương đương mức giảm gần 6 triệu đồng. Mẫu xe cao cấp UC3 cũng được điều chỉnh giảm trực tiếp 22 triệu đồng, đưa mức giá thực tế xuống còn 56,5 triệu đồng — mức giảm được đánh giá là kỷ lục trong lịch sử xe điện của hãng tại Việt Nam.</span>
+    </div>
+    <div class="zh-text">Honda越南率先調降ICON e的定價至2,050萬越盾，降幅相當於近600萬越盾。高端車款UC3也直接調降2,200萬越盾，使實際售價降至5,650萬越盾——此降幅被認為是該品牌在越南電動車史上的破紀錄之舉。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Yamaha không đứng ngoài cuộc, điều chỉnh giảm 13 triệu đồng cho mẫu NEO's, đưa giá về mức 36,9 triệu đồng. Trong khi đó, VinFast tiếp tục duy trì lợi thế giá thấp với hàng loạt ưu đãi hấp dẫn: hỗ trợ ngay 10% giá xe và miễn 100% lệ phí trước bạ cho khách hàng trên toàn quốc.">▶</button>
+      <span>Yamaha không đứng ngoài cuộc, điều chỉnh giảm 13 triệu đồng cho mẫu NEO's, đưa giá về mức 36,9 triệu đồng. Trong khi đó, VinFast tiếp tục duy trì lợi thế giá thấp với hàng loạt ưu đãi hấp dẫn: hỗ trợ ngay 10% giá xe và miễn 100% lệ phí trước bạ cho khách hàng trên toàn quốc.</span>
+    </div>
+    <div class="zh-text">Yamaha也不甘袖手旁觀，將NEO's調降1,300萬越盾，售價降至3,690萬越盾。VinFast則繼續憑藉低價優勢推出多項誘人優惠：即享10%車價補貼，並全國免除100%的過戶稅費。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Đây là kết quả trực tiếp của áp lực cạnh tranh từ VinFast — hãng đã bán được 406.453 xe máy điện tại Việt Nam trong năm 2025, tăng trưởng đến 473% so với năm trước. Làn sóng giảm giá đồng loạt cho thấy thị trường đang bước vào giai đoạn cạnh tranh về quy mô: khi công nghệ cơ bản đã đạt độ bão hòa, người tiêu dùng ngày càng nhạy cảm với giá cả hơn là tính năng kỹ thuật.">▶</button>
+      <span>Đây là kết quả trực tiếp của áp lực cạnh tranh từ VinFast — hãng đã bán được 406.453 xe máy điện tại Việt Nam trong năm 2025, tăng trưởng đến 473% so với năm trước. Làn sóng giảm giá đồng loạt cho thấy thị trường đang bước vào giai đoạn cạnh tranh về quy mô: khi công nghệ cơ bản đã đạt độ bão hòa, người tiêu dùng ngày càng nhạy cảm với giá cả hơn là tính năng kỹ thuật.</span>
+    </div>
+    <div class="zh-text">這是VinFast競爭壓力直接造成的結果——該品牌2025年在越南共售出406,453輛電動機車，年增幅高達473%。各品牌同步降價的浪潮顯示市場已進入規模競爭階段：當基礎技術趨於飽和，消費者對價格的敏感度已超過對技術規格的關注。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「nhằm + 動詞」——為了、目的在於</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Các ông lớn như Honda, Yamaha và VinFast giảm giá niêm yết mạnh tay, nhằm giành thị phần trong bối cảnh cạnh tranh ngày càng khốc liệt.">▶</button>
+      <span>Các ông lớn như Honda, Yamaha và VinFast giảm giá niêm yết mạnh tay, <span class="highlight">nhằm</span> giành thị phần trong bối cảnh cạnh tranh ngày càng khốc liệt.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">Honda、Yamaha和VinFast等大廠大幅調降定價，<span class="highlight">為了</span>在激烈競爭中搶佔市場份額。</div>
+    <div class="structure-box">[主句行動], nhằm + [目的動詞片語]</div>
+    <div style="font-size:0.94rem;color:var(--muted);margin-bottom:8px;">說明：「nhằm」表達目的，用法類似「để」（為了），但語氣更正式，常見於新聞書面語。置於主句動作之後，引出行動的最終目的。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty tăng cường quảng cáo nhằm thu hút thêm khách hàng mới.">▶</button><span>Công ty tăng cường quảng cáo <span class="highlight">nhằm</span> thu hút thêm khách hàng mới.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司加強廣告宣傳，為了吸引更多新客戶。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chính phủ đầu tư vào giáo dục nhằm nâng cao chất lượng nguồn nhân lực.">▶</button><span>Chính phủ đầu tư vào giáo dục <span class="highlight">nhằm</span> nâng cao chất lượng nguồn nhân lực.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 政府投資教育，目的在於提升人力資源品質。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：「ngày càng + 形容詞／動詞」——越來越……</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Khi công nghệ cơ bản đã đạt độ bão hòa, người tiêu dùng ngày càng nhạy cảm với giá cả hơn là tính năng kỹ thuật.">▶</button>
+      <span>Khi công nghệ cơ bản đã đạt độ bão hòa, người tiêu dùng <span class="highlight">ngày càng</span> nhạy cảm với giá cả hơn là tính năng kỹ thuật.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">當基礎技術趨於飽和，消費者對價格的敏感度<span class="highlight">越來越</span>高，超過對技術規格的關注。</div>
+    <div class="structure-box">[主語] + ngày càng + [形容詞 / 動詞]（＋ hơn，可省略）</div>
+    <div style="font-size:0.94rem;color:var(--muted);margin-bottom:8px;">說明：「ngày càng」修飾形容詞或動詞，表示程度持續增加的趨勢，等同中文「越來越」。後面可接「hơn」強調比較，但不加程度副詞「rất」。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Giới trẻ Việt Nam ngày càng quan tâm đến sức khỏe và môi trường.">▶</button><span>Giới trẻ Việt Nam <span class="highlight">ngày càng</span> quan tâm đến sức khỏe và môi trường.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 越南年輕人越來越關注健康與環境。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Các ứng dụng giao đồ ăn ngày càng phổ biến tại các thành phố lớn.">▶</button><span>Các ứng dụng giao đồ ăn <span class="highlight">ngày càng</span> phổ biến tại các thành phố lớn.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 外送應用程式在大城市越來越普及。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：「tương đương + 名詞／數量」——相當於、等同</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Honda giảm giá niêm yết mẫu ICON e xuống còn 20,5 triệu đồng, tương đương mức giảm gần 6 triệu đồng.">▶</button>
+      <span>Honda giảm giá niêm yết mẫu ICON e xuống còn 20,5 triệu đồng, <span class="highlight">tương đương</span> mức giảm gần 6 triệu đồng.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">Honda將ICON e的定價調降至2,050萬越盾，<span class="highlight">相當於</span>近600萬越盾的降幅。</div>
+    <div class="structure-box">[事物A / 數量A], tương đương + [比較對象B]（AB 等值）</div>
+    <div style="font-size:0.94rem;color:var(--muted);margin-bottom:8px;">說明：「tương đương」為漢越詞「相當」，用於說明兩事物在數量、程度或性質上等同。常接名詞片語，後面不加「với」亦可直接接數字。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Mức lương 15 triệu đồng mỗi tháng tương đương khoảng 600 đô la Mỹ.">▶</button><span>Mức lương 15 triệu đồng mỗi tháng <span class="highlight">tương đương</span> khoảng 600 đô la Mỹ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 每月1,500萬越盾的薪資相當於約600美元。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Diện tích căn hộ đó tương đương hai phòng ngủ thông thường ghép lại.">▶</button><span>Diện tích căn hộ đó <span class="highlight">tương đương</span> hai phòng ngủ thông thường ghép lại.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 那間公寓的坪數相當於兩間普通臥室合併起來。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「đưa + 對象 + xuống còn／lên đến + 數量」——使……降至／升至</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Mẫu xe cao cấp UC3 được điều chỉnh giảm trực tiếp 22 triệu đồng, đưa mức giá thực tế xuống còn 56,5 triệu đồng.">▶</button>
+      <span>Mẫu xe cao cấp UC3 được điều chỉnh giảm trực tiếp 22 triệu đồng, <span class="highlight">đưa</span> mức giá thực tế <span class="highlight">xuống còn</span> 56,5 triệu đồng.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">高端車款UC3直接調降2,200萬越盾，<span class="highlight">使</span>實際售價<span class="highlight">降至</span>5,650萬越盾。</div>
+    <div class="structure-box">đưa + [對象] + xuống còn + [目標數量]（降低）<br>đưa + [對象] + lên đến + [目標數量]（提升）</div>
+    <div style="font-size:0.94rem;color:var(--muted);margin-bottom:8px;">說明：「đưa」（帶到、引至）＋方向詞「xuống còn」（降至）或「lên đến」（升至），是新聞中描述數字變化的常用結構，可用於價格、速度、比率等各類數量詞。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chính sách mới đưa lãi suất ngân hàng xuống còn 5% mỗi năm.">▶</button><span>Chính sách mới <span class="highlight">đưa</span> lãi suất ngân hàng <span class="highlight">xuống còn</span> 5% mỗi năm.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 新政策使銀行利率降至每年5%。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công nghệ pin mới đưa phạm vi hoạt động của xe điện lên đến 600 km.">▶</button><span>Công nghệ pin mới <span class="highlight">đưa</span> phạm vi hoạt động của xe điện <span class="highlight">lên đến</span> 600 km.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 新電池技術使電動車的續航里程提升至600公里。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+
+  <div class="culture-block">
+    <h3>VinFast 是什麼？越南的電動車夢</h3>
+    <p>VinFast 是越南最大私人集團 Vingroup 旗下的電動汽車與電動機車品牌，由億萬富翁范日旺（Phạm Nhật Vượng）創立，2017年正式成立。2023年在美國那斯達克（Nasdaq）掛牌上市，市值一度超越福特與通用，成為震驚國際的話題。VinFast 被視為越南科技與製造業崛起的象徵，也是政府推動「在越南製造」（Make in Vietnam）政策的重要旗手。</p>
+    <p>在台灣，「triệu đồng」（百萬越盾）是越南日常消費最常用的計價單位。1萬越盾約等於新台幣12～13元，因此文中的「20,5 triệu đồng」（2,050萬越盾）大約相當於新台幣2,600～2,700元，是越南電動機車的入門級市場。這個價格遠低於台灣，因為越南的薪資水準與消費水準都有所不同，機車是絕大多數越南人最重要的日常交通工具。</p>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「這個品牌率先推出優惠方案，目的在於吸引更多年輕消費者，並擴大市場份額。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Thương hiệu này tiên phong tung ra các ưu đãi, nhằm thu hút thêm nhiều người tiêu dùng trẻ và mở rộng thị phần.">▶</button>
+        <span>Thương hiệu này tiên phong tung ra các ưu đãi, nhằm thu hút thêm nhiều người tiêu dùng trẻ và mở rộng thị phần.</span>
+      </div>
+      <div class="ans-zh">這個品牌率先推出優惠方案，目的在於吸引更多年輕消費者，並擴大市場份額。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Khi nhiều hãng cùng sản xuất sản phẩm tương tự, thị trường sẽ dần đạt độ ________ và giá cả trở thành yếu tố cạnh tranh chính.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）sôi động</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（B）kỷ lục</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（C）bão hòa</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）tương đương</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（C）bão hòa</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Khi nhiều hãng cùng sản xuất sản phẩm tương tự, thị trường sẽ dần đạt độ bão hòa và giá cả trở thành yếu tố cạnh tranh chính.">▶</button>
+        <span>Khi nhiều hãng cùng sản xuất sản phẩm tương tự, thị trường sẽ dần đạt độ <span class="highlight">bão hòa</span> và giá cả trở thành yếu tố cạnh tranh chính.</span>
+      </div>
+      <div class="ans-zh">bão hòa（飽和）＝技術或產品差異趨近，市場難以再靠功能競爭；其餘選項語意不符。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Theo bài đọc, VinFast đã bán được bao nhiêu xe máy điện tại Việt Nam trong năm 2025 và mức tăng trưởng là bao nhiêu phần trăm?">▶</button>
+        <strong>Theo bài đọc, VinFast đã bán được bao nhiêu xe máy điện tại Việt Nam trong năm 2025 và mức tăng trưởng là bao nhiêu phần trăm?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（根據文章，VinFast在2025年在越南賣出了多少輛電動機車？成長幅度是多少百分比？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Theo bài đọc, VinFast đã bán được 406.453 xe máy điện tại Việt Nam trong năm 2025, với mức tăng trưởng lên đến 473% so với năm trước.">▶</button>
+        <span>Theo bài đọc, VinFast đã bán được 406.453 xe máy điện tại Việt Nam trong năm 2025, với mức tăng trưởng lên đến 473% so với năm trước.</span>
+      </div>
+      <div class="ans-zh">根據文章，VinFast在2025年在越南售出了406,453輛電動機車，年增幅高達473%。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"thị trường",  pos:"名詞",   zh:"市場",               eg_vn:"Thị trường điện thoại thông minh đang phát triển nhanh chóng.",    eg_zh:"智慧型手機市場正在快速發展。",         hv:"市場" },
+  { vn:"niêm yết",   pos:"動詞",   zh:"公告定價、標示牌價",  eg_vn:"Giá vé được niêm yết rõ ràng tại cửa rạp chiếu phim.",            eg_zh:"電影院門口清楚標示了票價。",           hv:"黏揭（公示）" },
+  { vn:"tiên phong", pos:"動詞",   zh:"率先、引領先驅",      eg_vn:"Công ty này tiên phong ứng dụng trí tuệ nhân tạo vào sản xuất.",  eg_zh:"這家公司率先將人工智慧應用於生產製造。", hv:"先鋒" },
+  { vn:"giảm giá",   pos:"動詞",   zh:"降價、打折",          eg_vn:"Cuối tuần này, siêu thị sẽ giảm giá nhiều mặt hàng thực phẩm.",  eg_zh:"這個週末，超市將對許多食品進行降價。",  hv:"" },
+  { vn:"tương đương",pos:"形容詞", zh:"相當於、等同",         eg_vn:"Mức học phí đó tương đương ba tháng lương của nhân viên.",        eg_zh:"那個學費相當於員工三個月的薪資。",      hv:"相當" },
+  { vn:"ưu đãi",     pos:"名詞",   zh:"優惠、特別待遇",      eg_vn:"Sinh viên được hưởng nhiều ưu đãi khi mua vé tàu hỏa.",          eg_zh:"學生購買火車票可享受多項優惠。",        hv:"優待" },
+  { vn:"thị phần",   pos:"名詞",   zh:"市場份額",            eg_vn:"Hãng đó đang mở rộng thị phần tại thị trường châu Á.",           eg_zh:"那個品牌正在擴大在亞洲市場的份額。",   hv:"市份" },
+  { vn:"bão hòa",    pos:"形容詞", zh:"飽和",                eg_vn:"Thị trường nội thất đã đạt mức bão hòa, khó tăng trưởng thêm.",  eg_zh:"家具市場已達飽和，難以進一步成長。",   hv:"飽和" },
+  { vn:"kỷ lục",     pos:"名詞",   zh:"紀錄、破紀錄",        eg_vn:"Năm ngoái, doanh nghiệp đó đạt doanh thu kỷ lục.",              eg_zh:"去年那家企業創下破紀錄的營收。",        hv:"記錄" },
+  { vn:"lệ phí",     pos:"名詞",   zh:"費用、規費、稅費",    eg_vn:"Lệ phí đăng ký học tại trường đó khá cao.",                     eg_zh:"那所學校的報名費相當高。",              hv:"例費（規定費用）" },
+  { vn:"hưởng lợi",  pos:"動詞",   zh:"受益、得利",          eg_vn:"Người mua nhà sẽ hưởng lợi từ chính sách lãi suất thấp.",       eg_zh:"購屋者將從低利率政策中受益。",          hv:"享利" },
+  { vn:"sôi động",   pos:"形容詞", zh:"熱絡、活躍",          eg_vn:"Không khí tại lễ hội âm nhạc rất sôi động.",                    eg_zh:"音樂節現場的氣氛非常熱絡。",            hv:"沸動" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
