@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Việt Nam tham dự Hội nghị Bộ trưởng APEC về Công nghệ số và Trí tuệ nhân tạo</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="1.0" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Việt Nam tham dự Hội nghị Bộ trưởng APEC về Công nghệ số và Trí tuệ nhân tạo">▶</button>
+      <span class="vn-title">Việt Nam tham dự Hội nghị Bộ trưởng APEC về Công nghệ số và Trí tuệ nhân tạo</span>
+    </div>
+    <div class="zh-title">越南出席APEC數位科技與人工智慧部長級會議</div>
+    <div class="meta-row">
+      <span>📅 2026-07-23</span>
+      <span>📰 <a href="http://vov.vn/the-gioi/hoi-nghi-bo-truong-apec-ve-cong-nghe-so-va-ai-2026-se-dien-ra-tai-thanh-do-post1314260.vov" target="_blank">VOV（越南之聲廣播電台）</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Ngày 23 tháng 7 năm 2026, Hội nghị Bộ trưởng APEC về Công nghệ số và Trí tuệ nhân tạo chính thức khai mạc tại thành phố Thành Đô, tỉnh Tứ Xuyên, Trung Quốc. Đây là một trong những hoạt động chuyên đề quan trọng nhất của APEC 2026 do Trung Quốc đăng cai tổ chức, nằm trong khuôn khổ Tuần lễ Số APEC khai mạc từ ngày 16 tháng 7.">▶</button>
+      <span>Ngày 23 tháng 7 năm 2026, Hội nghị Bộ trưởng APEC về Công nghệ số và Trí tuệ nhân tạo chính thức khai mạc tại thành phố Thành Đô, tỉnh Tứ Xuyên, Trung Quốc. Đây là một trong những hoạt động chuyên đề quan trọng nhất của APEC 2026 do Trung Quốc đăng cai tổ chức, nằm trong khuôn khổ Tuần lễ Số APEC khai mạc từ ngày 16 tháng 7.</span>
+    </div>
+    <div class="zh-text">2026年7月23日，APEC數位科技與人工智慧部長級會議在中國四川省成都市正式開幕。這是中國主辦的APEC 2026最重要的專題活動之一，隸屬於7月16日開幕的APEC數位週框架。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Hội nghị tập trung thảo luận các lĩnh vực quan trọng như kết nối số toàn diện, ứng dụng công nghệ số và trí tuệ nhân tạo, an ninh số, và xây dựng hệ sinh thái số lành mạnh. Mục tiêu chính là thúc đẩy cơ sở hạ tầng thông tin hiện đại, đáng tin cậy và chi phí hợp lý, nhằm thu hẹp khoảng cách số giữa các nền kinh tế thành viên.">▶</button>
+      <span>Hội nghị tập trung thảo luận các lĩnh vực quan trọng như kết nối số toàn diện, ứng dụng công nghệ số và trí tuệ nhân tạo, an ninh số, và xây dựng hệ sinh thái số lành mạnh. Mục tiêu chính là thúc đẩy cơ sở hạ tầng thông tin hiện đại, đáng tin cậy và chi phí hợp lý, nhằm thu hẹp khoảng cách số giữa các nền kinh tế thành viên.</span>
+    </div>
+    <div class="zh-text">會議重點討論全面數位連接、數位科技與人工智慧應用、數位安全及建構健全數位生態系統等重要領域。主要目標是推動現代、可靠且成本合理的資訊基礎設施，以縮小各成員經濟體之間的數位落差。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Tại hội nghị, Bộ trưởng Bộ Khoa học và Công nghệ Việt Nam Vũ Hải Quân khẳng định Việt Nam đã định hình một Chiến lược phát triển trí tuệ nhân tạo rõ ràng và toàn diện. Bên cạnh đó, Việt Nam đề xuất đẩy mạnh hợp tác với các đối tác chiến lược như Qualcomm trong lĩnh vực nghiên cứu - phát triển và công nghiệp bán dẫn.">▶</button>
+      <span>Tại hội nghị, Bộ trưởng Bộ Khoa học và Công nghệ Việt Nam Vũ Hải Quân khẳng định Việt Nam đã định hình một Chiến lược phát triển trí tuệ nhân tạo rõ ràng và toàn diện. Bên cạnh đó, Việt Nam đề xuất đẩy mạnh hợp tác với các đối tác chiến lược như Qualcomm trong lĩnh vực nghiên cứu - phát triển và công nghiệp bán dẫn.</span>
+    </div>
+    <div class="zh-text">在會議上，越南科技部部長武海軍（Vũ Hải Quân）強調，越南已制定出清晰且全面的人工智慧發展戰略。此外，越南提議與高通（Qualcomm）等戰略夥伴在研發和半導體產業領域加強合作。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Trong nước, kể từ ngày 1 tháng 7 năm 2026, Luật Chuyển đổi số 2025 và Luật Công nghệ cao 2025 đã chính thức có hiệu lực, tạo khung pháp lý mới cho ngành công nghệ chiến lược. Doanh nghiệp công nghệ cao nhóm 1 được hưởng mức ưu đãi thuế cao nhất, gồm miễn thuế thu nhập doanh nghiệp trong 4 năm và áp dụng thuế suất 10% trong 15 năm, nhằm khuyến khích đầu tư thực chất vào nghiên cứu và phát triển.">▶</button>
+      <span>Trong nước, kể từ ngày 1 tháng 7 năm 2026, Luật Chuyển đổi số 2025 và Luật Công nghệ cao 2025 đã chính thức có hiệu lực, tạo khung pháp lý mới cho ngành công nghệ chiến lược. Doanh nghiệp công nghệ cao nhóm 1 được hưởng mức ưu đãi thuế cao nhất, gồm miễn thuế thu nhập doanh nghiệp trong 4 năm và áp dụng thuế suất 10% trong 15 năm, nhằm khuyến khích đầu tư thực chất vào nghiên cứu và phát triển.</span>
+    </div>
+    <div class="zh-text">在國內，自2026年7月1日起，《2025年數位轉型法》和《2025年高科技法》正式生效，為戰略科技產業建立了新的法律框架。第一類高科技企業可享有最高稅收優惠，包括免徵四年企業所得稅及十五年適用10%稅率，旨在鼓勵對研發的實質性投資。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「nhằm + 動詞」——為了、旨在</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Mục tiêu chính là thúc đẩy cơ sở hạ tầng thông tin hiện đại, nhằm thu hẹp khoảng cách số giữa các nền kinh tế thành viên.">▶</button>
+      <span>Mục tiêu chính là thúc đẩy cơ sở hạ tầng thông tin hiện đại, <span class="highlight">nhằm</span> thu hẹp khoảng cách số giữa các nền kinh tế thành viên.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">主要目標是推動現代資訊基礎設施，<span class="highlight">旨在</span>縮小各成員經濟體之間的數位落差。</div>
+    <div class="structure-box">[動作／措施] + nhằm + [動詞（目的）]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">📌 nhằm 相當於中文的「為了」「旨在」「以便」，後面接動詞，表示目的。語氣比 để 更正式，常見於新聞、官方文件。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chính phủ đầu tư vào giáo dục nhằm nâng cao chất lượng nguồn nhân lực.">▶</button><span>Chính phủ đầu tư vào giáo dục <span class="highlight">nhằm</span> nâng cao chất lượng nguồn nhân lực.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 政府投資教育，旨在提升人力資源的素質。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Công ty mở rộng thị trường nhằm tăng doanh thu trong năm tới.">▶</button><span>Công ty mở rộng thị trường <span class="highlight">nhằm</span> tăng doanh thu trong năm tới.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 公司拓展市場，旨在提升明年的營收。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：「được hưởng + 名詞」——享有、獲得（被動式帶正面語意）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Doanh nghiệp công nghệ cao nhóm 1 được hưởng mức ưu đãi thuế cao nhất.">▶</button>
+      <span>Doanh nghiệp công nghệ cao nhóm 1 <span class="highlight">được hưởng</span> mức ưu đãi thuế cao nhất.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">第一類高科技企業<span class="highlight">可享有</span>最高稅收優惠。</div>
+    <div class="structure-box">[主語] + được hưởng + [名詞（福利／待遇）]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">📌 「được」是越南語被動語態助詞，用於正面、有利的情況（受益）。若為負面情況則改用「bị」。「được hưởng」字面為「被享有」，中文譯為「享有」「享受到」。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Người lao động được hưởng chế độ bảo hiểm y tế đầy đủ.">▶</button><span>Người lao động <span class="highlight">được hưởng</span> chế độ bảo hiểm y tế đầy đủ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 勞動者可享有完整的健康保險制度。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Sinh viên giỏi được hưởng học bổng toàn phần của trường.">▶</button><span>Sinh viên giỏi <span class="highlight">được hưởng</span> học bổng toàn phần của trường.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 優秀學生可享有學校的全額獎學金。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：「đã định hình」——已（確立／塑造）（過去完成語氣）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Việt Nam đã định hình một Chiến lược phát triển trí tuệ nhân tạo rõ ràng và toàn diện.">▶</button>
+      <span>Việt Nam <span class="highlight">đã định hình</span> một Chiến lược phát triển trí tuệ nhân tạo rõ ràng và toàn diện.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">越南<span class="highlight">已制定出</span>清晰且全面的人工智慧發展戰略。</div>
+    <div class="structure-box">[主語] + đã + [動詞] + [受詞]　（đã 表示動作已完成）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">📌 「đã」是越南語的過去時態助詞，放在動詞前，表示「已經做了某事」。「định hình」（定形）是漢越詞，意為「確立、塑造、形成」。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Anh ấy đã xác định được hướng đi rõ ràng cho sự nghiệp của mình.">▶</button><span>Anh ấy <span class="highlight">đã</span> xác định được hướng đi rõ ràng cho sự nghiệp của mình.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 他已為自己的事業確立了清晰的方向。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Hai nước đã ký kết thỏa thuận hợp tác về công nghệ bán dẫn.">▶</button><span>Hai nước <span class="highlight">đã</span> ký kết thỏa thuận hợp tác về công nghệ bán dẫn.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 兩國已簽署半導體技術合作協議。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「kể từ ngày + 日期」——自⋯⋯起、從⋯⋯日開始</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Kể từ ngày 1 tháng 7 năm 2026, Luật Chuyển đổi số 2025 đã chính thức có hiệu lực.">▶</button>
+      <span><span class="highlight">Kể từ ngày</span> 1 tháng 7 năm 2026, Luật Chuyển đổi số 2025 đã chính thức có hiệu lực.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;"><span class="highlight">自</span>2026年7月1日<span class="highlight">起</span>，《2025年數位轉型法》正式生效。</div>
+    <div class="structure-box">Kể từ ngày + [日期], + [句子（通常含 đã）]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">📌 「kể từ」意為「從⋯⋯算起」，語氣正式，常見於法律、公告文書。日常口語中也可說「từ ngày」（從那天起）。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Kể từ ngày mai, cửa hàng sẽ mở cửa sớm hơn một tiếng.">▶</button><span><span class="highlight">Kể từ ngày</span> mai, cửa hàng sẽ mở cửa sớm hơn một tiếng.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 從明天起，店面將提早一小時開門。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Kể từ khi chuyển đổi số, công ty tiết kiệm được nhiều chi phí hơn.">▶</button><span><span class="highlight">Kể từ khi</span> chuyển đổi số, công ty tiết kiệm được nhiều chi phí hơn.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 自從數位轉型以來，公司節省了更多成本。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化小提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+  <div class="para-block">
+    <div class="vn-text" style="font-size:1.1rem;font-weight:400;">
+      <span>
+        <strong>APEC（亞太經濟合作論壇）</strong>全名為 Diễn đàn Hợp tác Kinh tế châu Á - Thái Bình Dương，是亞太地區規模最大的政府間經濟論壇，目前有21個成員經濟體。越南曾於1998年及2006年主辦APEC，並將於<strong>2027年再次主辦</strong>——屆時越南將成為所有APEC議題的議程設定者，這對越南的國際形象及數位科技政策推動具有重要意義。
+      </span>
+    </div>
+  </div>
+  <div class="para-block">
+    <div class="vn-text" style="font-size:1.1rem;font-weight:400;">
+      <span>
+        <strong>Bộ Khoa học và Công nghệ（科技部）</strong>是越南負責科學研究、技術創新、數位轉型政策的核心主管機關。近年越南政府積極將AI與半導體列為「công nghệ chiến lược」（戰略科技），希望仿效韓國、台灣的發展模式，將越南打造成全球半導體供應鏈的重要一環。「Make in Vietnam」（在越南製造）是越南政府推動的科技自主品牌政策，強調本土研發與製造能力。
+      </span>
+    </div>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「政府投資半導體產業，旨在縮小與先進國家之間的技術差距。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Chính phủ đầu tư vào ngành công nghiệp bán dẫn nhằm thu hẹp khoảng cách công nghệ với các nước tiên tiến.">▶</button>
+        <span>Chính phủ đầu tư vào ngành công nghiệp bán dẫn nhằm thu hẹp khoảng cách công nghệ với các nước tiên tiến.</span>
+      </div>
+      <div class="ans-zh">政府投資半導體產業，旨在縮小與先進國家之間的技術差距。<br><span style="font-size:0.95rem;">（關鍵詞：bán dẫn 半導體、nhằm 旨在、thu hẹp 縮小、khoảng cách 差距）</span></div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【填空題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Doanh nghiệp công nghệ cao ________ mức ưu đãi thuế cao nhất theo quy định của luật mới.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）bị hưởng</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（B）được hưởng</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（C）đã hưởng thụ</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）nhằm hưởng</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（B）được hưởng</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Doanh nghiệp công nghệ cao được hưởng mức ưu đãi thuế cao nhất theo quy định của luật mới.">▶</button>
+        <span>Doanh nghiệp công nghệ cao <span class="highlight">được hưởng</span> mức ưu đãi thuế cao nhất theo quy định của luật mới.</span>
+      </div>
+      <div class="ans-zh">（A）bị 用於負面被動，不適用於「享有優惠」；（C）hưởng thụ 偏向享樂，語意不同；（D）nhằm 後接動詞，不接名詞片語。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Luật Chuyển đổi số 2025 của Việt Nam chính thức có hiệu lực từ khi nào và mang lại ưu đãi gì cho doanh nghiệp công nghệ cao?">▶</button>
+        <strong>Luật Chuyển đổi số 2025 của Việt Nam chính thức có hiệu lực từ khi nào và mang lại ưu đãi gì cho doanh nghiệp công nghệ cao?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（越南《2025年數位轉型法》從何時正式生效？它為高科技企業帶來了什麼優惠？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Luật Chuyển đổi số 2025 chính thức có hiệu lực kể từ ngày 1 tháng 7 năm 2026. Doanh nghiệp công nghệ cao nhóm 1 được hưởng mức ưu đãi thuế cao nhất, gồm miễn thuế thu nhập doanh nghiệp trong 4 năm và áp dụng thuế suất 10% trong 15 năm.">▶</button>
+        <span>Luật Chuyển đổi số 2025 chính thức có hiệu lực kể từ ngày 1 tháng 7 năm 2026. Doanh nghiệp công nghệ cao nhóm 1 được hưởng mức ưu đãi thuế cao nhất, gồm miễn thuế thu nhập doanh nghiệp trong 4 năm và áp dụng thuế suất 10% trong 15 năm.</span>
+      </div>
+      <div class="ans-zh">《2025年數位轉型法》自2026年7月1日起正式生效。第一類高科技企業可享有最高稅收優惠，包括免徵四年企業所得稅及十五年適用10%稅率。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"trí tuệ nhân tạo", pos:"名詞",  zh:"人工智慧（AI）",          eg_vn:"Trí tuệ nhân tạo đang thay đổi nhiều ngành công nghiệp.",        eg_zh:"人工智慧正在改變許多產業。",       hv:"智慧人工→人工智慧" },
+  { vn:"chuyển đổi số",    pos:"名詞",  zh:"數位轉型",                 eg_vn:"Doanh nghiệp cần đẩy nhanh chuyển đổi số để cạnh tranh.",         eg_zh:"企業需要加速數位轉型以保持競爭力。",  hv:"轉đổi數→數位轉型" },
+  { vn:"kết nối",          pos:"動詞",  zh:"連接、連結",               eg_vn:"Điện thoại giúp chúng ta kết nối với nhau dễ dàng hơn.",          eg_zh:"手機讓我們更容易彼此連結。",     hv:"結連→連結" },
+  { vn:"hệ sinh thái",     pos:"名詞",  zh:"生態系統",                 eg_vn:"Hệ sinh thái khởi nghiệp ở Hà Nội đang phát triển mạnh.",         eg_zh:"河內的新創生態系統正蓬勃發展。",    hv:"系生態→生態系統" },
+  { vn:"bán dẫn",          pos:"名詞",  zh:"半導體",                   eg_vn:"Chip bán dẫn là nền tảng của mọi thiết bị điện tử.",             eg_zh:"半導體晶片是所有電子設備的基礎。",  hv:"半導→半導體" },
+  { vn:"khung pháp lý",    pos:"名詞",  zh:"法律框架",                 eg_vn:"Chính phủ đang xây dựng khung pháp lý cho trí tuệ nhân tạo.",    eg_zh:"政府正在為人工智慧建立法律框架。",  hv:"框法律→法律框架" },
+  { vn:"ưu đãi",           pos:"名詞",  zh:"優惠、優待",               eg_vn:"Sinh viên được hưởng ưu đãi khi mua vé xe buýt.",                eg_zh:"學生購買公車票可享有優惠。",       hv:"優待→優惠" },
+  { vn:"chiến lược",       pos:"名詞",  zh:"戰略、策略",               eg_vn:"Công ty đang xây dựng chiến lược phát triển mới.",               eg_zh:"公司正在制定新的發展戰略。",       hv:"戰略→戰略" },
+  { vn:"thu hẹp",          pos:"動詞",  zh:"縮小、縮減",               eg_vn:"Chính phủ muốn thu hẹp khoảng cách giàu nghèo.",                 eg_zh:"政府希望縮小貧富差距。",           hv:"" },
+  { vn:"đăng cai",         pos:"動詞",  zh:"主辦、承辦",               eg_vn:"Việt Nam sẽ đăng cai APEC 2027.",                                 eg_zh:"越南將主辦APEC 2027。",              hv:"" },
+  { vn:"nghị sự",          pos:"名詞",  zh:"議程、議題",               eg_vn:"Biến đổi khí hậu là chủ đề chính trong nghị sự hội nghị.",      eg_zh:"氣候變遷是本次會議議程的主要議題。",  hv:"議事→議程" },
+  { vn:"có hiệu lực",      pos:"動詞片語",zh:"生效、有效力",           eg_vn:"Bộ luật mới sẽ có hiệu lực từ đầu năm sau.",                    eg_zh:"新法典將於明年年初生效。",           hv:"" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
