@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南語教學｜Hưởng ứng Ngày An ninh mạng Việt Nam 6/8: Những thông điệp thiết thực về an toàn số</title>
+  <style>
+    :root {
+      --red:    #c0392b;
+      --gold:   #f39c12;
+      --bg:     #fdfaf5;
+      --card:   #ffffff;
+      --text:   #2c2c2c;
+      --muted:  #666;
+      --border: #e0d9ce;
+      --accent: #7b3fa0;
+      --accent-light: #f3eaf9;
+      --green:  #27ae60;
+      --blue:   #2980b9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', 'PingFang TC', sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.75;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--red) 0%, #922b21 100%);
+      color: #fff; padding: 28px 24px 22px; text-align: center;
+    }
+    header .flag { font-size: 2rem; margin-bottom: 6px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    header .sub { font-size: 0.85rem; opacity: 0.85; }
+
+    /* ── Controls ── */
+    #controls {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 10px 20px; position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .ctrl-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    }
+    .ctrl-row + .ctrl-row {
+      margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);
+    }
+    .ctrl-label { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+    input[type=range] { width: 80px; accent-color: var(--accent); }
+    select, input[type=password], input[type=text] {
+      font-size: 0.82rem; border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 8px;
+      background: #fff; font-family: inherit;
+    }
+    #voice-select { min-width: 220px; max-width: 320px; }
+
+    /* API key row */
+    #api-row { display: none; }
+    #api-row.show { display: flex; }
+    .key-wrap { position: relative; display: inline-flex; align-items: center; }
+    .key-wrap input { width: 250px; padding-right: 30px; font-family: monospace; font-size: 0.8rem; }
+    .eye-btn { position: absolute; right: 6px; background: none; border: none; cursor: pointer; font-size: 0.85rem; }
+    .api-badge {
+      font-size: 0.75rem; padding: 3px 9px; border-radius: 6px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .api-badge.tip { background: #fef9e7; color: #7d6608; border: 1px solid #f9e79f; }
+    .api-badge.ok  { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .api-badge.err { background: #fdedec; color: #c0392b; border: 1px solid #f1948a; }
+    .api-link { font-size: 0.75rem; color: var(--blue); white-space: nowrap; }
+
+    #stop-btn {
+      margin-left: auto; background: #e74c3c; color: #fff;
+      border: none; border-radius: 8px; padding: 6px 14px;
+      font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #stop-btn:hover { background: #c0392b; }
+    #diag-btn {
+      background: #f0f0f0; color: #555;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 6px 12px; font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+    }
+    #diag-btn:hover { background: #e0e0e0; }
+
+    /* 診斷面板 */
+    #diag-panel {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 999;
+      align-items: center; justify-content: center;
+    }
+    #diag-panel.show { display: flex; }
+    #diag-box {
+      background: #fff; border-radius: 14px;
+      padding: 24px 28px; max-width: 540px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+    #diag-box h3 { font-size: 1rem; color: var(--accent); margin-bottom: 12px; }
+    #diag-box ul { list-style: none; padding: 0; font-size: 0.85rem; }
+    #diag-box li { padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; }
+    #diag-box li:last-child { border-bottom: none; }
+    .vi-tag { background: #c0392b; color: #fff; font-size: 0.7rem; border-radius: 4px; padding: 1px 5px; flex-shrink: 0; }
+    #diag-close { margin-top: 14px; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 8px 20px; cursor: pointer; font-size: 0.88rem; }
+
+    /* ── Layout ── */
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.375rem; font-weight: 700; color: var(--red);
+      margin: 32px 0 14px; padding-bottom: 8px;
+      border-bottom: 2px solid var(--red);
+    }
+
+    /* ── News meta ── */
+    .news-meta {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+    }
+    .news-meta .vn-title { font-size: 1.44rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+    .news-meta .zh-title { font-size: 1.19rem; color: var(--muted); margin-bottom: 10px; }
+    .news-meta .meta-row { font-size: 1rem; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+    .news-meta .meta-row a { color: var(--red); text-decoration: none; }
+    .news-meta .meta-row a:hover { text-decoration: underline; }
+
+    /* ── Paragraph blocks ── */
+    .para-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+    }
+    .vn-text {
+      font-size: 1.25rem; color: #1a1a2e; font-weight: 500;
+      margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .vn-text span { flex: 1; }
+    .zh-text {
+      font-size: 1.125rem; color: var(--muted);
+      border-left: 3px solid var(--gold); margin-left: 4px; padding-left: 12px;
+    }
+
+    /* ── Play button ── */
+    .play-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: var(--accent); color: #fff;
+      cursor: pointer; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.15s; margin-top: 2px;
+    }
+    .play-btn:hover { background: #5e2d7a; transform: scale(1.08); }
+    .play-btn.playing { background: var(--green); animation: pulse 1s infinite; }
+    .play-btn.loading { background: var(--gold); }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.4); }
+      50%      { box-shadow: 0 0 0 7px rgba(39,174,96,0); }
+    }
+
+    /* ── Vocab table ── */
+    .vocab-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 1.1rem; }
+    th { background: var(--accent); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: var(--accent-light); }
+    .vn-word { font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .pos-badge { display: inline-block; font-size: 0.9rem; background: var(--gold); color: #fff; border-radius: 4px; padding: 1px 5px; }
+    .hv-tag { display: inline-block; font-size: 0.9rem; background: #e8f4fd; color: #2980b9; border-radius: 4px; padding: 1px 5px; margin-top: 2px; }
+    .eg-zh { color: var(--muted); font-size: 1.025rem; }
+
+    /* ── Grammar ── */
+    .grammar-block {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent); border-radius: 12px;
+      padding: 18px 20px; margin-bottom: 16px;
+    }
+    .grammar-block h3 { font-size: 1.25rem; color: var(--accent); margin-bottom: 12px; }
+    .grammar-label { font-size: 0.94rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+    .grammar-vn { display: flex; align-items: flex-start; gap: 8px; }
+    .grammar-vn span { flex: 1; }
+    .highlight { color: var(--red); font-weight: 700; }
+    .structure-box { background: #fef9e7; border: 1px dashed var(--gold); border-radius: 8px; padding: 8px 12px; font-size: 1.0625rem; margin: 8px 0; font-family: monospace; }
+    .ext-list { padding-left: 0; list-style: none; }
+    .ext-list li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; font-size: 1.1rem; }
+    .ext-list li .num { flex-shrink: 0; width: 20px; height: 20px; background: var(--accent); color: #fff; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+
+    /* ── Quiz ── */
+    .quiz-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+    .quiz-block h3 { font-size: 1.1875rem; color: var(--red); margin-bottom: 10px; }
+    .quiz-prompt { font-size: 1.125rem; margin-bottom: 10px; }
+    .quiz-input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 1.125rem; margin-bottom: 8px; font-family: inherit; resize: vertical; }
+    .quiz-input:focus { outline: none; border-color: var(--accent); }
+    .reveal-btn { background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 1.0625rem; cursor: pointer; }
+    .reveal-btn:hover { background: #1e8449; }
+    .answer-box { display: none; margin-top: 10px; background: #eafaf1; border: 1px solid #a9dfbf; border-radius: 8px; padding: 10px 14px; font-size: 1.125rem; }
+    .answer-box .ans-label { font-size: 0.94rem; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+    .answer-box .ans-vn { font-weight: 600; color: #1a1a2e; display: flex; align-items: flex-start; gap: 8px; }
+    .answer-box .ans-zh { color: var(--muted); font-size: 1.0625rem; margin-top: 4px; }
+    .options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .opt-btn { border: 2px solid var(--border); background: #fff; border-radius: 8px; padding: 6px 16px; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .opt-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .opt-btn.correct { border-color: var(--green); background: #eafaf1; color: var(--green); font-weight: 700; }
+    .opt-btn.wrong   { border-color: #e74c3c; background: #fdedec; color: #e74c3c; }
+
+    footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding: 20px; border-top: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.1rem; }
+      th, td { padding: 8px; font-size: 1rem; }
+      #voice-select { min-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="flag">🇻🇳</div>
+  <h1>越南語新聞閱讀教學</h1>
+  <div class="sub">點擊 ▶ 聆聽朗讀 · 語音選單內含 Google 男女聲 · 建議使用 Chrome</div>
+</header>
+
+<!-- ══ Controls ══ -->
+<div id="controls">
+  <!-- Row 1: 語速 + 語音選單 + 停止 -->
+  <div class="ctrl-row">
+    <span class="ctrl-label">語速</span>
+    <input type="range" id="rate" min="0.5" max="1.5" step="0.05" value="1.0" />
+    <span id="rate-val" class="ctrl-label">0.85×</span>
+
+    <span class="ctrl-label">語音</span>
+    <select id="voice-select">
+      <option value="" disabled selected>⏳ 正在偵測語音…</option>
+      <optgroup id="browser-group" label="🔊 瀏覽器內建語音">
+      </optgroup>
+      <optgroup id="google-group" label="🎙 Google Cloud TTS（需 API 金鑰）">
+        <option value="google:vi-VN-Neural2-A">Google 女聲 Neural2-A（最自然）</option>
+        <option value="google:vi-VN-Neural2-B">Google 男聲 Neural2-B（最自然）</option>
+        <option value="google:vi-VN-Wavenet-A">Google 女聲 WaveNet-A（高品質）</option>
+        <option value="google:vi-VN-Wavenet-B">Google 男聲 WaveNet-B（高品質）</option>
+        <option value="google:vi-VN-Standard-A">Google 女聲 Standard-A</option>
+        <option value="google:vi-VN-Standard-B">Google 男聲 Standard-B</option>
+      </optgroup>
+    </select>
+
+    <button id="stop-btn">⏹ 停止</button>
+    <button id="diag-btn" title="列出所有已載入的瀏覽器語音">🔍 診斷語音</button>
+  </div>
+
+  <!-- Row 2: API 金鑰（只在選 Google 語音時顯示） -->
+  <div class="ctrl-row" id="api-row">
+    <span class="ctrl-label">API 金鑰</span>
+    <div class="key-wrap">
+      <input type="password" id="api-key" placeholder="貼上 Google Cloud TTS API Key…" />
+      <button class="eye-btn" onclick="toggleKeyVis()" title="顯示/隱藏">👁</button>
+    </div>
+    <span id="api-badge" class="api-badge tip">⚠ 請輸入金鑰後即可使用 Google 語音</span>
+    <a class="api-link" href="https://console.cloud.google.com/apis/library/texttospeech.googleapis.com" target="_blank">↗ 如何取得免費金鑰</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 新聞標題 ══ -->
+  <div class="section-title"><span>📰</span>新聞標題</div>
+  <div class="news-meta">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Hưởng ứng Ngày An ninh mạng Việt Nam 6 tháng 8: Những thông điệp thiết thực về an toàn số">▶</button>
+      <span class="vn-title">Hưởng ứng Ngày An ninh mạng Việt Nam 6/8: Những thông điệp thiết thực về an toàn số</span>
+    </div>
+    <div class="zh-title">響應越南網路安全日8月6日：關於數位安全的實用訊息</div>
+    <div class="meta-row">
+      <span>📅 2026-08-06</span>
+      <span>📰 <a href="https://vietnammedia.vnanet.vn/news/huong-ung-ngay-an-ninh-mang-viet-nam-6-8-nhung-thong-diep-thiet-thuc-ve-an-toan-so-197214.htm" target="_blank">Thông tấn xã Việt Nam（越南通訊社）</a></span>
+    </div>
+  </div>
+
+  <!-- ══ 原文與翻譯 ══ -->
+  <div class="section-title"><span>📄</span>新聞原文與翻譯</div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Ngày 6 tháng 8 hằng năm được chọn là Ngày An ninh mạng Việt Nam — cột mốc quan trọng để toàn xã hội cùng nhìn lại và nâng cao nhận thức về an toàn không gian số. Năm 2026, thông điệp chủ đạo là "Kiến tạo không gian mạng an toàn, nhân văn", hướng tới xây dựng môi trường số lành mạnh cho mọi người dân.">▶</button>
+      <span>Ngày 6/8 hằng năm được chọn là Ngày An ninh mạng Việt Nam — cột mốc quan trọng để toàn xã hội cùng nhìn lại và nâng cao nhận thức về an toàn không gian số. Năm 2026, thông điệp chủ đạo là "Kiến tạo không gian mạng an toàn, nhân văn", hướng tới xây dựng môi trường số lành mạnh cho mọi người dân.</span>
+    </div>
+    <div class="zh-text">每年8月6日被選定為越南網路安全日——這是全社會共同回顧並提升數位空間安全意識的重要里程碑。2026年，主要訊息為「打造安全、人文的網路空間」，旨在為每位公民建立健康的數位環境。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Theo thống kê từ Cục An toàn thông tin, trong 8 tháng đầu năm 2026, cả nước ghi nhận hơn 1.500 vụ lừa đảo trực tuyến, tăng 65% so với cùng kỳ năm 2024, gây thiệt hại hơn 1.660 tỷ đồng. Các hình thức gian lận ngày càng tinh vi, đặc biệt là lừa đảo mạo danh cơ quan nhà nước, ngân hàng và sử dụng công nghệ deepfake để đánh lừa nạn nhân.">▶</button>
+      <span>Theo thống kê từ Cục An toàn thông tin, trong 8 tháng đầu năm 2026, cả nước ghi nhận hơn 1.500 vụ lừa đảo trực tuyến, tăng 65% so với cùng kỳ năm 2024, gây thiệt hại hơn 1.660 tỷ đồng. Các hình thức gian lận ngày càng tinh vi, đặc biệt là lừa đảo mạo danh cơ quan nhà nước, ngân hàng và sử dụng công nghệ deepfake để đánh lừa nạn nhân.</span>
+    </div>
+    <div class="zh-text">根據資訊安全局的統計，2026年前8個月，全國錄得逾1,500起網路詐騙案件，較2024年同期增加65%，造成逾1,660億越南盾的損失。詐騙手法日益精密，尤其是冒充政府機關、銀行以及利用深偽（deepfake）技術欺騙受害者的案例。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Nhân dịp Ngày An ninh mạng, Thủ tướng Chính phủ đã phát động phong trào hưởng ứng rộng rãi, kêu gọi mỗi người dân cần trang bị kỹ năng tự bảo vệ mình trên không gian số. Các bộ, ngành và địa phương được yêu cầu triển khai đồng bộ các giải pháp bảo đảm an ninh mạng, đặc biệt là bảo vệ dữ liệu cá nhân của người dùng.">▶</button>
+      <span>Nhân dịp Ngày An ninh mạng, Thủ tướng Chính phủ đã phát động phong trào hưởng ứng rộng rãi, kêu gọi mỗi người dân cần trang bị kỹ năng tự bảo vệ mình trên không gian số. Các bộ, ngành và địa phương được yêu cầu triển khai đồng bộ các giải pháp bảo đảm an ninh mạng, đặc biệt là bảo vệ dữ liệu cá nhân của người dùng.</span>
+    </div>
+    <div class="zh-text">值此網路安全日之際，政府總理發起廣泛的響應運動，呼籲每位公民必須具備在數位空間保護自身的技能。各部委、部門及地方被要求同步推行網路安全保障措施，尤其是保護用戶的個人資料。</div>
+  </div>
+
+  <div class="para-block">
+    <div class="vn-text">
+      <button class="play-btn" data-text="Hiệp hội An ninh mạng Quốc gia khuyến nghị người dùng cần cảnh giác cao với các cuộc gọi lạ, không chia sẻ mã OTP hay thông tin cá nhân qua điện thoại, và kiểm tra kỹ nguồn gốc các đường link trước khi truy cập. Việc cập nhật phần mềm định kỳ và sử dụng mật khẩu mạnh cũng là những biện pháp cơ bản nhưng hiệu quả để phòng chống lừa đảo trực tuyến.">▶</button>
+      <span>Hiệp hội An ninh mạng Quốc gia khuyến nghị người dùng cần cảnh giác cao với các cuộc gọi lạ, không chia sẻ mã OTP hay thông tin cá nhân qua điện thoại, và kiểm tra kỹ nguồn gốc các đường link trước khi truy cập. Việc cập nhật phần mềm định kỳ và sử dụng mật khẩu mạnh cũng là những biện pháp cơ bản nhưng hiệu quả để phòng chống lừa đảo trực tuyến.</span>
+    </div>
+    <div class="zh-text">國家網路安全協會建議用戶對陌生來電保持高度警惕，不得透過電話分享OTP碼或個人資訊，並在訪問前仔細核查連結來源。定期更新軟體及使用強效密碼，亦是防範網路詐騙的基本但有效的措施。</div>
+  </div>
+
+  <!-- ══ 單字 ══ -->
+  <div class="section-title"><span>📚</span>重點單字解析</div>
+  <div class="vocab-table-wrap">
+    <table>
+      <thead>
+        <tr><th>越南文</th><th>詞性</th><th>中文意思</th><th>例句</th><th>例句翻譯</th></tr>
+      </thead>
+      <tbody id="vocab-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 語法 ══ -->
+  <div class="section-title"><span>🔍</span>語法解析</div>
+
+  <div class="grammar-block">
+    <h3>語法一：「được + 動詞 + là」——被動語態（被選為⋯⋯）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Ngày 6 tháng 8 hằng năm được chọn là Ngày An ninh mạng Việt Nam.">▶</button>
+      <span>Ngày 6/8 hằng năm <span class="highlight">được chọn là</span> Ngày An ninh mạng Việt Nam.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">每年8月6日<span class="highlight">被選定為</span>越南網路安全日。</div>
+    <div class="structure-box">[受詞/主語] + được + [動詞] + [補語／結果]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">💡 「được」在被動語態中帶有正面、受益的意涵（相對於「bị」表示負面被動）。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cô ấy được chọn là đại diện của nhóm.">▶</button><span>Cô ấy <span class="highlight">được chọn là</span> đại diện của nhóm.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 她被選為小組代表。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bức thư này được viết bằng tiếng Việt.">▶</button><span>Bức thư này <span class="highlight">được viết</span> bằng tiếng Việt.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 這封信是用越南語寫的。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法二：「tăng/giảm + 數量 + so với」——比較增減句型</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Số vụ lừa đảo tăng 65% so với cùng kỳ năm 2024.">▶</button>
+      <span>Số vụ lừa đảo <span class="highlight">tăng 65% so với</span> cùng kỳ năm 2024.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">詐騙案件數量<span class="highlight">較</span>2024年同期<span class="highlight">增加65%</span>。</div>
+    <div class="structure-box">[主語] + tăng/giảm + [幅度/數量] + so với + [比較基準]</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">💡 「cùng kỳ」= 同期；「so với」= 相比、相對於；tăng = 增加，giảm = 減少。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Doanh thu tháng này tăng 20% so với tháng trước.">▶</button><span>Doanh thu tháng này <span class="highlight">tăng 20% so với</span> tháng trước.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 本月營收較上月增加20%。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Nhiệt độ hôm nay giảm 5 độ so với hôm qua.">▶</button><span>Nhiệt độ hôm nay <span class="highlight">giảm 5 độ so với</span> hôm qua.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 今天氣溫比昨天下降了5度。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法三：「ngày càng + 形容詞／動詞」——日益、越來越</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Các hình thức gian lận ngày càng tinh vi.">▶</button>
+      <span>Các hình thức gian lận <span class="highlight">ngày càng</span> tinh vi.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">詐騙手法<span class="highlight">日益</span>精密。</div>
+    <div class="structure-box">[主語] + ngày càng + [形容詞／動詞]（表示程度持續加深）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">💡 「ngày càng」相當於中文「越來越⋯⋯」或「日益⋯⋯」，後接形容詞或動詞，不需加時態助詞。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Cuộc sống ngày càng tiện lợi nhờ công nghệ.">▶</button><span>Cuộc sống <span class="highlight">ngày càng</span> tiện lợi nhờ công nghệ.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 生活因科技而日益便利。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Học sinh ngày càng quen với việc học trực tuyến.">▶</button><span>Học sinh <span class="highlight">ngày càng</span> quen với việc học trực tuyến.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 學生越來越習慣線上學習。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <div class="grammar-block">
+    <h3>語法四：「cần + 動詞」——表示必要性（需要做⋯⋯）</h3>
+    <div class="grammar-label">新聞例句</div>
+    <div class="grammar-vn" style="margin-bottom:4px;">
+      <button class="play-btn" data-text="Mỗi người dân cần trang bị kỹ năng tự bảo vệ mình trên không gian số.">▶</button>
+      <span>Mỗi người dân <span class="highlight">cần</span> trang bị kỹ năng tự bảo vệ mình trên không gian số.</span>
+    </div>
+    <div style="color:var(--muted);font-size:1.0625rem;margin-bottom:8px;">每位公民都<span class="highlight">需要</span>具備在數位空間保護自身的技能。</div>
+    <div class="structure-box">[主語] + cần + [動詞片語]（表示客觀需要或義務，語氣較「phải」溫和）</div>
+    <div style="color:var(--muted);font-size:1rem;margin-bottom:8px;">💡 「cần」（需要）語氣比「phải」（必須）溫和，類似英文的 need to；常用於建議或說明必要性。</div>
+    <div class="grammar-label" style="margin-top:10px;">延伸例句</div>
+    <ul class="ext-list">
+      <li><span class="num">1</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Bạn cần kiểm tra kỹ đường link trước khi nhấp vào.">▶</button><span>Bạn <span class="highlight">cần</span> kiểm tra kỹ đường link trước khi nhấp vào.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 點擊之前，你需要仔細確認連結。</div>
+      </div></li>
+      <li><span class="num">2</span><div>
+        <div class="grammar-vn"><button class="play-btn" data-text="Chúng ta cần cập nhật phần mềm định kỳ để bảo vệ thiết bị.">▶</button><span>Chúng ta <span class="highlight">cần</span> cập nhật phần mềm định kỳ để bảo vệ thiết bị.</span></div>
+        <div style="color:var(--muted);font-size:1.0625rem;">→ 我們需要定期更新軟體以保護設備。</div>
+      </div></li>
+    </ul>
+  </div>
+
+  <!-- ══ 文化提示 ══ -->
+  <div class="section-title"><span>💡</span>文化小提示</div>
+  <div class="para-block">
+    <div class="vn-text" style="font-size:1.1rem;font-weight:400;">
+      <span>🗓️ <strong>越南網路安全日（Ngày An ninh mạng Việt Nam）</strong>定於每年8月6日，由越南政府設立，旨在提升全民對網路安全的重視與防範意識。這一天全國各地政府機關、學校及企業會舉辦宣導活動，邀請資安專家演講並分享防詐知識。2026年的主題「Kiến tạo không gian mạng an toàn, nhân văn」（打造安全、人文的網路空間）特別強調科技使用應兼顧人道精神，反映越南社會對數位倫理的關注。</span>
+    </div>
+  </div>
+  <div class="para-block">
+    <div class="vn-text" style="font-size:1.1rem;font-weight:400;">
+      <span>💰 <strong>越南盾（đồng，符號：₫）</strong>是越南法定貨幣，單位極小。新聞中提到的「1.660 tỷ đồng」（1,660億越南盾）約合台幣2億多元（依2026年匯率），這個金額充分說明網路詐騙在越南已造成相當嚴重的經濟損失。「tỷ」= 10億，「triệu」= 百萬，是閱讀越南財經新聞的必備單位概念。</span>
+    </div>
+  </div>
+
+  <!-- ══ Quiz ══ -->
+  <div class="section-title"><span>📝</span>學習小測驗</div>
+
+  <div class="quiz-block">
+    <h3>第 1 題【翻譯題】</h3>
+    <div class="quiz-prompt">請將以下中文句子翻譯成越南文：<br><strong>「您需要定期更換密碼，並對陌生連結保持警惕，才能保護個人資料。」</strong></div>
+    <textarea class="quiz-input" rows="2" placeholder="請輸入您的答案…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a1')">查看答案</button>
+    <div class="answer-box" id="a1">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Bạn cần thay đổi mật khẩu định kỳ và cảnh giác với các đường link lạ để bảo vệ dữ liệu cá nhân.">▶</button>
+        <span>Bạn cần thay đổi mật khẩu định kỳ và cảnh giác với các đường link lạ để bảo vệ dữ liệu cá nhân.</span>
+      </div>
+      <div class="ans-zh">您需要定期更換密碼，並對陌生連結保持警惕，才能保護個人資料。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 2 題【選擇題】</h3>
+    <div class="quiz-prompt">
+      請選出最適合填入空格的詞語：<br>
+      <strong>「Năm 2026, số vụ lừa đảo trực tuyến tăng ________ so với cùng kỳ năm 2024, gây thiệt hại hơn 1.660 tỷ đồng.」</strong>
+    </div>
+    <div class="options">
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（A）30%</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（B）50%</button>
+      <button class="opt-btn" onclick="checkOpt(this,'correct')">（C）65%</button>
+      <button class="opt-btn" onclick="checkOpt(this,'wrong')">（D）80%</button>
+    </div>
+    <div class="answer-box" id="a2">
+      <div class="ans-label">✅ 正確答案：（C）65%</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Năm 2026, số vụ lừa đảo trực tuyến tăng 65% so với cùng kỳ năm 2024, gây thiệt hại hơn 1.660 tỷ đồng.">▶</button>
+        <span>Năm 2026, số vụ lừa đảo trực tuyến tăng <span class="highlight">65%</span> so với cùng kỳ năm 2024, gây thiệt hại hơn 1.660 tỷ đồng.</span>
+      </div>
+      <div class="ans-zh">根據新聞內容，2026年前8個月網路詐騙案件較2024年同期增加65%。</div>
+    </div>
+  </div>
+
+  <div class="quiz-block">
+    <h3>第 3 題【問答題】</h3>
+    <div class="quiz-prompt">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <button class="play-btn" data-text="Theo bài, chủ đề của Ngày An ninh mạng Việt Nam năm 2026 là gì?">▶</button>
+        <strong>Theo bài, chủ đề của Ngày An ninh mạng Việt Nam năm 2026 là gì?</strong>
+      </div>
+      <span style="color:var(--muted);font-size:1.0625rem;">（根據文章，2026年越南網路安全日的主題是什麼？）</span>
+    </div>
+    <textarea class="quiz-input" rows="3" placeholder="請用越南文回答…"></textarea>
+    <button class="reveal-btn" onclick="revealAnswer('a3')">查看答案</button>
+    <div class="answer-box" id="a3">
+      <div class="ans-label">✅ 參考答案</div>
+      <div class="ans-vn">
+        <button class="play-btn" data-text="Chủ đề của Ngày An ninh mạng Việt Nam năm 2026 là Kiến tạo không gian mạng an toàn, nhân văn. Thông điệp này hướng tới việc xây dựng môi trường số lành mạnh cho mọi người dân.">▶</button>
+        <span>Chủ đề của Ngày An ninh mạng Việt Nam năm 2026 là "Kiến tạo không gian mạng an toàn, nhân văn". Thông điệp này hướng tới việc xây dựng môi trường số lành mạnh cho mọi người dân.</span>
+      </div>
+      <div class="ans-zh">2026年越南網路安全日的主題是「打造安全、人文的網路空間」。這個訊息旨在為每位公民建立健康的數位環境。</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- 診斷面板 -->
+<div id="diag-panel">
+  <div id="diag-box">
+    <h3>🔍 瀏覽器已載入語音清單</h3>
+    <ul id="diag-list"></ul>
+    <button id="diag-close" onclick="document.getElementById('diag-panel').classList.remove('show')">關閉</button>
+  </div>
+</div>
+
+<footer>
+  🇻🇳 越南語新聞閱讀教學 ｜ Google Cloud TTS / Web Speech API ｜ 建議使用 Google Chrome
+</footer>
+
+<script>
+// ════════════════════════════════════════
+//  Vocab data
+// ════════════════════════════════════════
+const vocabData = [
+  { vn:"an ninh mạng",      pos:"名詞",     zh:"網路安全、資安",           eg_vn:"Chính phủ đang đầu tư nhiều hơn vào an ninh mạng.",              eg_zh:"政府正投入更多資源在網路安全上。",   hv:"安寧網" },
+  { vn:"lừa đảo",           pos:"動詞/名詞", zh:"詐騙",                     eg_vn:"Anh ta bị lừa đảo qua điện thoại và mất nhiều tiền.",             eg_zh:"他遭到電話詐騙並損失大量金錢。",     hv:"" },
+  { vn:"trực tuyến",        pos:"形容詞",   zh:"線上的、網路上的",         eg_vn:"Tôi thích mua sắm trực tuyến vì rất tiện lợi.",                  eg_zh:"我喜歡網路購物，因為非常方便。",     hv:"直線→線上" },
+  { vn:"mạo danh",          pos:"動詞",     zh:"冒充身分、假冒他人",       eg_vn:"Kẻ gian mạo danh nhân viên ngân hàng để gọi điện lừa đảo.",       eg_zh:"詐騙犯假冒銀行員工致電行騙。",       hv:"冒名" },
+  { vn:"thiệt hại",         pos:"名詞",     zh:"損失、損害",               eg_vn:"Trận lụt gây thiệt hại nặng nề cho người dân miền Trung.",        eg_zh:"洪水對中部民眾造成嚴重損失。",       hv:"失害→損失" },
+  { vn:"tinh vi",           pos:"形容詞",   zh:"精密、手段複雜難識破",     eg_vn:"Thủ đoạn của bọn tội phạm mạng ngày càng tinh vi hơn.",           eg_zh:"網路犯罪分子的手段越來越精密。",     hv:"" },
+  { vn:"cảnh giác",         pos:"動詞/形容詞","zh":"保持警惕、提高戒備",   eg_vn:"Bạn nên cảnh giác khi nhận cuộc gọi từ số điện thoại lạ.",       eg_zh:"接到陌生號碼來電時應保持警惕。",     hv:"警覺" },
+  { vn:"phần mềm",          pos:"名詞",     zh:"軟體",                     eg_vn:"Hãy cập nhật phần mềm diệt virus thường xuyên nhé.",              eg_zh:"請定期更新防毒軟體。",               hv:"" },
+  { vn:"mật khẩu",          pos:"名詞",     zh:"（登入）密碼",             eg_vn:"Bạn nên đổi mật khẩu ít nhất ba tháng một lần.",                 eg_zh:"你應該至少每三個月更換一次密碼。",   hv:"密口→密碼" },
+  { vn:"nhận thức",         pos:"名詞",     zh:"認識、意識、覺察",         eg_vn:"Nâng cao nhận thức về an toàn thông tin là điều rất cần thiết.",  eg_zh:"提升資訊安全意識是非常必要的事。",   hv:"認識" },
+  { vn:"kỹ năng",           pos:"名詞",     zh:"技能、能力",               eg_vn:"Kỹ năng sử dụng máy tính rất quan trọng trong thời đại số.",      eg_zh:"電腦操作技能在數位時代非常重要。",   hv:"技能" },
+  { vn:"không gian số",     pos:"名詞",     zh:"數位空間、網路空間",       eg_vn:"Mọi người đang dành nhiều thời gian hơn trong không gian số.",    eg_zh:"人們在數位空間花費的時間越來越多。", hv:"" },
+];
+
+(function buildVocabTable() {
+  const tbody = document.getElementById('vocab-body');
+  vocabData.forEach(w => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="vn-word">
+          <button class="play-btn" data-text="${w.vn}">▶</button>${w.vn}
+        </div>
+        ${w.hv ? `<div class="hv-tag">漢越：${w.hv}</div>` : ''}
+      </td>
+      <td><span class="pos-badge">${w.pos}</span></td>
+      <td>${w.zh}</td>
+      <td>
+        <div style="display:flex;align-items:flex-start;gap:6px;">
+          <button class="play-btn" data-text="${w.eg_vn}">▶</button>
+          <span>${w.eg_vn}</span>
+        </div>
+      </td>
+      <td class="eg-zh">${w.eg_zh}</td>`;
+    tbody.appendChild(tr);
+  });
+})();
+
+// ════════════════════════════════════════
+//  Populate browser voices into <optgroup>
+// ════════════════════════════════════════
+const synth = window.speechSynthesis;
+let voicesLoaded = false;
+
+function loadBrowserVoices() {
+  const voices = synth.getVoices();
+  if (!voices.length) return false;
+  if (voicesLoaded) return true;
+  voicesLoaded = true;
+
+  const grp = document.getElementById('browser-group');
+  grp.innerHTML = '';
+  const sorted = [
+    ...voices.filter(v => v.lang.startsWith('vi')),
+    ...voices.filter(v => !v.lang.startsWith('vi'))
+  ];
+  sorted.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = 'browser:' + voices.indexOf(v);
+    opt.textContent = `${v.name} (${v.lang})`;
+    grp.appendChild(opt);
+  });
+
+  const viVoice = voices.find(v => v.lang.startsWith('vi'));
+  if (viVoice) {
+    document.getElementById('voice-select').value = 'browser:' + voices.indexOf(viVoice);
+    document.getElementById('api-row').classList.remove('show');
+  }
+  return true;
+}
+
+synth.onvoiceschanged = loadBrowserVoices;
+loadBrowserVoices();
+[200, 500, 1000, 2000].forEach(ms =>
+  setTimeout(() => { if (!voicesLoaded) loadBrowserVoices(); }, ms)
+);
+
+// ════════════════════════════════════════
+//  Show/hide API key row based on selection
+// ════════════════════════════════════════
+document.getElementById('voice-select').addEventListener('change', function() {
+  const isGoogle = this.value.startsWith('google:');
+  document.getElementById('api-row').classList.toggle('show', isGoogle);
+});
+
+// ════════════════════════════════════════
+//  State
+// ════════════════════════════════════════
+let currentBtn   = null;
+let currentAudio = null;
+
+// ════════════════════════════════════════
+//  Unified speak dispatcher
+// ════════════════════════════════════════
+function speak(text, btn) {
+  stopAll();
+  currentBtn = btn;
+  const val = document.getElementById('voice-select').value;
+  if (val.startsWith('google:')) {
+    speakGoogle(text, btn, val.replace('google:', ''));
+  } else {
+    speakBrowser(text, btn, val);
+  }
+}
+
+// ── Browser TTS ──
+function speakBrowser(text, btn, val) {
+  const voices = synth.getVoices();
+  const idx    = parseInt(val.replace('browser:', ''));
+  const voice  = isNaN(idx) ? null : (voices[idx] || null);
+  const utt    = new SpeechSynthesisUtterance(text);
+  utt.lang  = voice ? voice.lang : 'vi-VN';
+  utt.rate  = parseFloat(document.getElementById('rate').value);
+  if (voice) utt.voice = voice;
+  utt.onstart = () => setBtnState(btn, 'playing');
+  utt.onend   = utt.onerror = () => { setBtnState(btn, 'idle'); currentBtn = null; };
+  synth.speak(utt);
+}
+
+// ── Google Cloud TTS ──
+async function speakGoogle(text, btn, voiceName) {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) {
+    setApiStatus('err', '⚠ 請先輸入 API 金鑰');
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    return;
+  }
+  const rate = parseFloat(document.getElementById('rate').value);
+  setBtnState(btn, 'loading');
+  try {
+    const res = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: { languageCode: 'vi-VN', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate: rate }
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+    currentAudio = audio;
+    audio.onplay  = () => setBtnState(btn, 'playing');
+    audio.onended = audio.onerror = () => { setBtnState(btn, 'idle'); currentAudio = null; currentBtn = null; };
+    audio.play();
+
+    const gender = voiceName.includes('-A') || voiceName.includes('-C') ? '女聲' : '男聲';
+    setApiStatus('ok', `✓ ${voiceName}（${gender}）`);
+  } catch (err) {
+    setBtnState(btn, 'idle');
+    currentBtn = null;
+    setApiStatus('err', '錯誤：' + err.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  Button helpers
+// ════════════════════════════════════════
+function setBtnState(btn, state) {
+  if (!btn) return;
+  btn.classList.remove('playing', 'loading');
+  if (state === 'playing') { btn.textContent = '⏸'; btn.classList.add('playing'); }
+  else if (state === 'loading') { btn.textContent = '…'; btn.classList.add('loading'); }
+  else { btn.textContent = '▶'; }
+}
+
+function stopAll() {
+  synth.cancel();
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  if (currentBtn)   { setBtnState(currentBtn, 'idle'); currentBtn = null; }
+}
+
+// ════════════════════════════════════════
+//  Event delegation
+// ════════════════════════════════════════
+document.body.addEventListener('click', e => {
+  const btn = e.target.closest('.play-btn');
+  if (!btn || !btn.dataset.text) return;
+  if (btn.classList.contains('playing')) { stopAll(); return; }
+  speak(btn.dataset.text, btn);
+});
+
+document.getElementById('stop-btn').addEventListener('click', stopAll);
+
+document.getElementById('diag-btn').addEventListener('click', () => {
+  const voices = synth.getVoices();
+  const list   = document.getElementById('diag-list');
+  list.innerHTML = '';
+  if (!voices.length) {
+    list.innerHTML = '<li style="color:#c0392b">⚠ 目前沒有載入任何語音。請確認瀏覽器版本，或稍候幾秒再試。</li>';
+  } else {
+    voices.forEach((v, i) => {
+      const isVi = v.lang.startsWith('vi');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        ${isVi ? '<span class="vi-tag">越南語</span>' : ''}
+        <span><strong>${v.name}</strong> &nbsp;<span style="color:var(--muted)">${v.lang}</span></span>
+        <span style="color:var(--muted);font-size:0.75rem;margin-left:auto">${v.localService ? '本機' : '線上'}</span>`;
+      list.appendChild(li);
+    });
+  }
+  document.getElementById('diag-panel').classList.add('show');
+});
+
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = parseFloat(this.value).toFixed(2) + '×';
+});
+
+document.getElementById('api-key').addEventListener('input', function() {
+  setApiStatus(this.value.trim() ? 'tip' : 'tip',
+    this.value.trim() ? '金鑰已填入，點擊 ▶ 測試' : '⚠ 請輸入金鑰後即可使用 Google 語音');
+});
+
+function setApiStatus(type, msg) {
+  const el = document.getElementById('api-badge');
+  el.className = 'api-badge ' + type;
+  el.textContent = msg;
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('api-key');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ════════════════════════════════════════
+//  Quiz
+// ════════════════════════════════════════
+function revealAnswer(id) { document.getElementById(id).style.display = 'block'; }
+
+function checkOpt(btn, result) {
+  btn.closest('.options').querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.getAttribute('onclick').includes("'correct'")) b.classList.add('correct');
+  });
+  if (result === 'wrong') btn.classList.add('wrong');
+  document.getElementById('a2').style.display = 'block';
+}
+</script>
+</body>
+</html>
